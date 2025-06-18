@@ -126,20 +126,22 @@
 
                         <!-- Butonlar -->
                         <StackLayout Orientation="Horizontal" Spacing="10" HorizontalOptions="FillAndExpand">
-                            <Button Text="{Binding DuzenlemeModu, Converter={StaticResource BoolToTextConverter}, ConverterParameter='Güncelle|Ekle'}"
-                                    Command="{Binding DuzenlemeModu, Converter={StaticResource BoolToCommandConverter}, ConverterParameter='{Binding EtiketKaydetCommand}|{Binding EtiketEkleCommand}'}"
+                            <Button Text="{Binding DuzenlemeModu, Converter={StaticResource BoolToStringConverter}, ConverterParameter='✅ Güncelle|➕ Ekle'}"
+                                    Command="{Binding EtiketKaydetCommand}"
                                     BackgroundColor="{AppThemeBinding Light=#3182CE, Dark=#4299E1}"
                                     TextColor="White"
                                     CornerRadius="8"
                                     HeightRequest="45"
+                                    FontAttributes="Bold"
                                     HorizontalOptions="FillAndExpand"/>
                             
-                            <Button Text="İptal"
+                            <Button Text="❌ İptal"
                                     Command="{Binding DuzenlemeIptalCommand}"
                                     BackgroundColor="{AppThemeBinding Light=#718096, Dark=#A0AEC0}"
                                     TextColor="White"
                                     CornerRadius="8"
                                     HeightRequest="45"
+                                    FontAttributes="Bold"
                                     HorizontalOptions="FillAndExpand"
                                     IsVisible="{Binding DuzenlemeModu}"/>
                         </StackLayout>

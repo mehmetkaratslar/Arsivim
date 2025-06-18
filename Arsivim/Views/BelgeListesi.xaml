@@ -8,15 +8,13 @@
              x:DataType="viewmodels:BelgeListeVM">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Ekle" 
-                     IconImageSource="add.png" 
+        <ToolbarItem Text="➕ Yeni Belge" 
                      Command="{Binding BelgeEkleCommand}" />
-        <ToolbarItem Text="Yenile" 
-                     IconImageSource="refresh.png" 
+        <ToolbarItem Text="🔄 Yenile" 
                      Command="{Binding YenileCommand}" />
     </ContentPage.ToolbarItems>
 
-    <Grid RowSpacing="10" Padding="10">
+    <Grid RowSpacing="10" BackgroundColor="#F5F7FA">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -25,9 +23,9 @@
         </Grid.RowDefinitions>
 
         <!-- Arama ve Filtre Bölümü -->
-        <StackLayout Grid.Row="0" Spacing="10">
+        <StackLayout Grid.Row="0" Spacing="15" Padding="15,10">
             <!-- Arama Çubuğu -->
-            <Frame BackgroundColor="White" Padding="10" CornerRadius="5" HasShadow="True">
+            <Frame BackgroundColor="White" Padding="15" CornerRadius="15" HasShadow="True">
                 <Grid ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -37,23 +35,34 @@
 
                     <Entry Grid.Column="0" 
                            Text="{Binding AramaMetni}" 
-                           Placeholder="Belgelerde ara..."
+                           Placeholder="🔍 Belgelerde ara..."
                            ReturnType="Search"
-                           ReturnCommand="{Binding AraCommand}" />
+                           ReturnCommand="{Binding AraCommand}"
+                           BackgroundColor="#F8F9FA"
+                           TextColor="#212529"
+                           PlaceholderColor="#6C757D"
+                           FontSize="16"
+                           HeightRequest="45" />
 
                     <Button Grid.Column="1" 
-                            Text="Ara" 
+                            Text="🔍 Ara" 
                             Command="{Binding AraCommand}"
-                            BackgroundColor="Blue"
+                            BackgroundColor="#6366F1"
                             TextColor="White"
-                            CornerRadius="5" />
+                            CornerRadius="10"
+                            FontSize="14"
+                            HeightRequest="45"
+                            WidthRequest="80" />
 
                     <Button Grid.Column="2" 
-                            Text="Temizle" 
+                            Text="🗑️ Temizle" 
                             Command="{Binding FiltreTemizleCommand}"
-                            BackgroundColor="Gray"
-                            TextColor="White"
-                            CornerRadius="5" />
+                            BackgroundColor="#E5E7EB"
+                            TextColor="#374151"
+                            CornerRadius="10"
+                            FontSize="14"
+                            HeightRequest="45"
+                            WidthRequest="100" />
                 </Grid>
             </Frame>
 
@@ -168,13 +177,43 @@
 
                                 <!-- Aksiyon Butonları -->
                                 <StackLayout Grid.Column="2" Spacing="5">
+                                    <Button Text="👁️" 
+                                            FontSize="14"
+                                            BackgroundColor="#FF6B35"
+                                            TextColor="White"
+                                            CornerRadius="15"
+                                            WidthRequest="40"
+                                            HeightRequest="35"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:BelgeListeVM}}, Path=BelgeAcCommand}"
+                                            CommandParameter="{Binding .}" />
+                                    
+                                    <Button Text="⬇️" 
+                                            FontSize="14"
+                                            BackgroundColor="Green"
+                                            TextColor="White"
+                                            CornerRadius="15"
+                                            WidthRequest="40"
+                                            HeightRequest="35"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:BelgeListeVM}}, Path=BelgeIndirCommand}"
+                                            CommandParameter="{Binding .}" />
+                                    
+                                    <Button Text="📤" 
+                                            FontSize="14"
+                                            BackgroundColor="Blue"
+                                            TextColor="White"
+                                            CornerRadius="15"
+                                            WidthRequest="40"
+                                            HeightRequest="35"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:BelgeListeVM}}, Path=BelgePaylasCommand}"
+                                            CommandParameter="{Binding .}" />
+                                    
                                     <Button Text="🗑️" 
-                                            FontSize="16"
+                                            FontSize="14"
                                             BackgroundColor="Red"
                                             TextColor="White"
                                             CornerRadius="15"
                                             WidthRequest="40"
-                                            HeightRequest="40"
+                                            HeightRequest="35"
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:BelgeListeVM}}, Path=BelgeSilCommand}"
                                             CommandParameter="{Binding .}" />
                                     

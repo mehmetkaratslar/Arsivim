@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="Arsivim.Views.BelgeEkle"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Arsivim.ViewModels"
+             Title="{Binding Title, FallbackValue='Yeni Belge Ekle'}"
+             x:DataType="viewmodels:BelgeEkleVM">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Stil tanımlamaları -->
+            <Style x:Key="CardFrameStyle" TargetType="Frame">
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="CornerRadius" Value="15" />
+                <Setter Property="HasShadow" Value="True" />
+                <Setter Property="Padding" Value="20" />
+                <Setter Property="Margin" Value="10,10,10,10" />
+            </Style>
+            
+            <Style x:Key="ModernEntryStyle" TargetType="Entry">
+                <Setter Property="BackgroundColor" Value="#F8F9FA" />
+                <Setter Property="TextColor" Value="#343A40" />
+                <Setter Property="PlaceholderColor" Value="#6C757D" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HeightRequest" Value="50" />
+            </Style>
+            
+            <Style x:Key="ModernEditorStyle" TargetType="Editor">
+                <Setter Property="BackgroundColor" Value="#F8F9FA" />
+                <Setter Property="TextColor" Value="#343A40" />
+                <Setter Property="PlaceholderColor" Value="#6C757D" />
+                <Setter Property="FontSize" Value="16" />
+            </Style>
+            
+            <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="#6366F1" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="CornerRadius" Value="12" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="HeightRequest" Value="50" />
+            </Style>
+            
+            <Style x:Key="SecondaryButtonStyle" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="#E5E7EB" />
+                <Setter Property="TextColor" Value="#374151" />
+                <Setter Property="CornerRadius" Value="12" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HeightRequest" Value="50" />
+            </Style>
+            
+            <Style x:Key="DangerButtonStyle" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="#EF4444" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="CornerRadius" Value="12" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HeightRequest" Value="50" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Ana İçerik -->
+        <ScrollView Grid.Row="0" BackgroundColor="#F3F4F6">
+            <StackLayout Spacing="0" Padding="0,20,0,20">
+
+                <!-- Başlık Kartı -->
+                <Frame Style="{StaticResource CardFrameStyle}">
+                    <StackLayout Spacing="10">
+                        <Label Text="{Binding DuzenlemeModu, Converter={StaticResource BoolToStringConverter}, ConverterParameter='📝 Belge Düzenle|📄 Yeni Belge Ekle'}" 
+                               FontSize="24" 
+                               FontAttributes="Bold" 
+                               TextColor="#1F2937"
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="{Binding DuzenlemeModu, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Belge bilgilerini düzenleyin|Belgenizi seçin ve gerekli bilgileri doldurun'}" 
+                               FontSize="14" 
+                               TextColor="#6B7280"
+                               HorizontalTextAlignment="Center" />
+                    </StackLayout>
+                </Frame>
+
+                <!-- Dosya Seçim Kartı -->
+                <Frame Style="{StaticResource CardFrameStyle}">
+                    <StackLayout Spacing="15">
+                        <Label Text="{Binding DuzenlemeModu, Converter={StaticResource BoolToStringConverter}, ConverterParameter='📁 Dosya Değiştir (Opsiyonel)|📁 Dosya Seçimi'}" 
+                               FontSize="18" 
+                               FontAttributes="Bold" 
+                               TextColor="#1F2937" />
+
+                        <!-- Dosya Seçim Alanı -->
+                        <Frame BackgroundColor="#F0F9FF" 
+                               CornerRadius="10" 
+                               HasShadow="False"
+                               Padding="20"
+                               IsVisible="{Binding SeciliDosya, Converter={StaticResource IsNullConverter}}">
+                            <StackLayout Spacing="10">
+                                <Label Text="{Binding DuzenlemeModu, Converter={StaticResource BoolToStringConverter}, ConverterParameter='🔄 Yeni dosya seç (opsiyonel)|🎯 Dosyanızı buraya sürükleyin'}" 
+                                       FontSize="16" 
+                                       FontAttributes="Bold"
+                                       TextColor="#0369A1"
+                                       HorizontalTextAlignment="Center" />
+                                <Label Text="veya" 
+                                       FontSize="14" 
+                                       TextColor="#6B7280"
+                                       HorizontalTextAlignment="Center" />
+                                <Grid ColumnSpacing="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <Button Grid.Column="0"
+                                            Text="{Binding DuzenlemeModu, Converter={StaticResource BoolToStringConverter}, ConverterParameter='🔄 Dosya Değiştir|📂 Dosya Seç'}" 
+                                            Style="{StaticResource PrimaryButtonStyle}"
+                                            Command="{Binding DosyaSecCommand}" />
+                                    
+                                    <Button Grid.Column="1"
+                                            Text="📷 Kamera" 
+                                            BackgroundColor="#10B981"
+                                            TextColor="White"
+                                            CornerRadius="12"
+                                            FontSize="16"
+                                            FontAttributes="Bold"
+                                            HeightRequest="50"
+                                            Command="{Binding KameraCekCommand}" />
+                                </Grid>
+                            </StackLayout>
+                        </Frame>
+
+                        <!-- Seçili Dosya Bilgileri -->
+                        <Frame BackgroundColor="#F0FDF4" 
+                               CornerRadius="10" 
+                               HasShadow="False"
+                               Padding="15"
+                               IsVisible="{Binding SeciliDosya, Converter={StaticResource IsNotNullConverter}}">
+                            <Grid ColumnSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Label Grid.Column="0" 
+                                       Text="✅" 
+                                       FontSize="24" 
+                                       VerticalOptions="Center" />
+
+                                <StackLayout Grid.Column="1" Spacing="2">
+                                    <Label Text="{Binding SeciliDosyaAdi}" 
+                                           FontSize="16" 
+                                           FontAttributes="Bold"
+                                           TextColor="#065F46"
+                                           LineBreakMode="TailTruncation" />
+                                    <Label Text="{Binding SeciliDosyaBoyutu}" 
+                                           FontSize="12" 
+                                           TextColor="#059669" />
+                                </StackLayout>
+
+                                <Button Grid.Column="2" 
+                                        Text="🗑️" 
+                                        BackgroundColor="#EF4444"
+                                        TextColor="White"
+                                        CornerRadius="20"
+                                        WidthRequest="40"
+                                        HeightRequest="40"
+                                        FontSize="14"
+                                        Command="{Binding DosyaKaldirCommand}" />
+                            </Grid>
+                        </Frame>
+                    </StackLayout>
+                </Frame>
+
+                <!-- Belge Bilgileri Kartı -->
+                <Frame Style="{StaticResource CardFrameStyle}">
+                    <StackLayout Spacing="15">
+                        <Label Text="📝 Belge Bilgileri" 
+                               FontSize="18" 
+                               FontAttributes="Bold" 
+                               TextColor="#1F2937" />
+
+                        <!-- Belge Adı -->
+                        <StackLayout Spacing="5">
+                            <Label Text="Belge Adı*" 
+                                   FontSize="14" 
+                                   FontAttributes="Bold"
+                                   TextColor="#374151" />
+                            <Entry Text="{Binding BelgeAdi}" 
+                                   Placeholder="Örn: Fatura, Sözleşme, Rapor..."
+                                   Style="{StaticResource ModernEntryStyle}" />
+                        </StackLayout>
+
+                        <!-- Belge Tipi -->
+                        <StackLayout Spacing="5">
+                            <Label Text="Belge Tipi*" 
+                                   FontSize="14" 
+                                   FontAttributes="Bold"
+                                   TextColor="#374151" />
+                            <Picker ItemsSource="{Binding BelgeTipleri}"
+                                    SelectedItem="{Binding SeciliBelgeTipi}"
+                                    Title="Belge tipini seçin..."
+                                    BackgroundColor="#F8F9FA"
+                                    TextColor="#343A40"
+                                    FontSize="16" />
+                        </StackLayout>
+
+                        <!-- Açıklama -->
+                        <StackLayout Spacing="5">
+                            <Label Text="Açıklama" 
+                                   FontSize="14" 
+                                   FontAttributes="Bold"
+                                   TextColor="#374151" />
+                            <Editor Text="{Binding Aciklama}" 
+                                    Placeholder="Belge hakkında detaylı bilgi yazın..."
+                                    HeightRequest="100"
+                                    Style="{StaticResource ModernEditorStyle}" />
+                        </StackLayout>
+                    </StackLayout>
+                </Frame>
+
+                <!-- Gelişmiş Seçenekler -->
+                <Frame Style="{StaticResource CardFrameStyle}">
+                    <StackLayout Spacing="15">
+                        <Label Text="⚙️ Gelişmiş Seçenekler" 
+                               FontSize="18" 
+                               FontAttributes="Bold" 
+                               TextColor="#1F2937" />
+
+                        <Grid ColumnSpacing="10" RowSpacing="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <CheckBox Grid.Row="0" Grid.Column="0" 
+                                      IsChecked="{Binding OtomatikIsimlendir}"
+                                      Color="#6366F1" />
+                            <Label Grid.Row="0" Grid.Column="1" 
+                                   Text="Dosya adını otomatik olarak belge adı olarak kullan" 
+                                   FontSize="14" 
+                                   TextColor="#374151"
+                                   VerticalOptions="Center" />
+
+                            <CheckBox Grid.Row="1" Grid.Column="0" 
+                                      IsChecked="{Binding FavoriyeEkle}"
+                                      Color="#EF4444" />
+                            <Label Grid.Row="1" Grid.Column="1" 
+                                   Text="Bu belgeyi favorilerime ekle" 
+                                   FontSize="14" 
+                                   TextColor="#374151"
+                                   VerticalOptions="Center" />
+                        </Grid>
+                    </StackLayout>
+                </Frame>
+
+            </StackLayout>
+        </ScrollView>
+
+        <!-- Alt Buton Çubuğu -->
+        <Frame Grid.Row="1" 
+               BackgroundColor="White" 
+               CornerRadius="0" 
+               HasShadow="True"
+               Padding="20,15,20,25">
+            <Grid ColumnSpacing="15">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" 
+                        Text="❌ İptal" 
+                        Style="{StaticResource SecondaryButtonStyle}"
+                        Command="{Binding IptalCommand}" />
+
+                <Button Grid.Column="1" 
+                        Text="💾 Kaydet" 
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        Command="{Binding KaydetCommand}" />
+            </Grid>
+        </Frame>
+
+        <!-- Loading Overlay -->
+        <Grid Grid.RowSpan="2" 
+              BackgroundColor="#80000000" 
+              IsVisible="{Binding IsBusy}">
+            <Frame BackgroundColor="White" 
+                   CornerRadius="15" 
+                   Padding="30"
+                   WidthRequest="200"
+                   HeightRequest="120"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center">
+                <StackLayout Spacing="15">
+                    <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                                       Color="#6366F1" 
+                                       WidthRequest="40" 
+                                       HeightRequest="40" />
+                    <Label Text="Belge yükleniyor..." 
+                           FontSize="16" 
+                           FontAttributes="Bold"
+                           TextColor="#374151"
+                           HorizontalTextAlignment="Center" />
+                </StackLayout>
+            </Frame>
+        </Grid>
+
+    </Grid>
+</ContentPage> 

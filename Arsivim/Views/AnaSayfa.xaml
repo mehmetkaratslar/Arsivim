@@ -5,197 +5,569 @@
              xmlns:viewmodels="clr-namespace:Arsivim.ViewModels"
              xmlns:models="clr-namespace:Arsivim.Core.Models;assembly=Arsivim.Core"
              Title="{Binding Title}"
-             x:DataType="viewmodels:AnaSayfaVM">
+             x:DataType="viewmodels:AnaSayfaVM"
+             BackgroundColor="{AppThemeBinding Light=#F8F9FA, Dark=#1A202C}">
 
-    <ScrollView>
-        <Grid Padding="20" RowSpacing="20">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
+	<Grid>
+		<!-- Gradient Background -->
+		<Grid.Background>
+			<LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+				<GradientStop Color="{AppThemeBinding Light=#E9ECEF, Dark=#1A202C}" Offset="0.0" />
+				<GradientStop Color="{AppThemeBinding Light=#F8F9FA, Dark=#2D3748}" Offset="1.0" />
+			</LinearGradientBrush>
+		</Grid.Background>
 
-            <!-- Hoşgeldiniz Mesajı -->
-            <Frame Grid.Row="0" 
-                   BackgroundColor="LightBlue" 
-                   Padding="15" 
-                   CornerRadius="10"
-                   HasShadow="True">
-                <Label Text="{Binding HosgeldinizMesaji}" 
-                       FontSize="18" 
-                       FontAttributes="Bold"
-                       TextColor="DarkBlue"
-                       HorizontalTextAlignment="Center" />
-            </Frame>
+		<ScrollView>
+			<Grid Padding="20" RowSpacing="20">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="*" />
+				</Grid.RowDefinitions>
 
-            <!-- Hızlı İstatistikler -->
-            <Grid Grid.Row="1" ColumnSpacing="10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-                <Frame Grid.Column="0" 
-                       BackgroundColor="LightGreen" 
-                       Padding="15" 
-                       CornerRadius="10"
+				<!-- Animated Welcome Header -->
+				<Frame Grid.Row="0" 
+                       BackgroundColor="{AppThemeBinding Light=White, Dark=#2D3748}"
+                       Padding="25" 
+                       CornerRadius="20"
                        HasShadow="True">
-                    <StackLayout>
-                        <Label Text="Toplam Belge" 
-                               FontSize="14" 
-                               TextColor="DarkGreen"
-                               HorizontalTextAlignment="Center" />
-                        <Label Text="{Binding ToplamBelgeSayisi}" 
-                               FontSize="24" 
-                               FontAttributes="Bold"
-                               TextColor="DarkGreen"
-                               HorizontalTextAlignment="Center" />
-                    </StackLayout>
-                </Frame>
+					<Frame.Background>
+						<LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+							<GradientStop Color="{AppThemeBinding Light=#667EEA, Dark=#4C1D95}" Offset="0.0" />
+							<GradientStop Color="{AppThemeBinding Light=#764BA2, Dark=#6B21A8}" Offset="1.0" />
+						</LinearGradientBrush>
+					</Frame.Background>
 
-                <Frame Grid.Column="1" 
-                       BackgroundColor="LightCoral" 
-                       Padding="15" 
-                       CornerRadius="10"
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto" />
+							<ColumnDefinition Width="*" />
+						</Grid.ColumnDefinitions>
+
+						<Label Grid.Column="0"
+                               Text="👋" 
+                               FontSize="40"
+                               VerticalOptions="Center"
+                               Margin="0,0,15,0" />
+
+						<StackLayout Grid.Column="1" VerticalOptions="Center">
+                            <Label Text="{Binding HosgeldinizMesaji}" 
+                                   FontSize="22" 
+                                   FontAttributes="Bold"
+                                   TextColor="White" />
+							<Label Text="Arşivinize hoş geldiniz!" 
+                                   FontSize="14" 
+                                   TextColor="White"
+                                   Opacity="0.9" />
+						</StackLayout>
+					</Grid>
+				</Frame>
+
+				<!-- Statistics Cards with Animations -->
+				<Grid Grid.Row="1" ColumnSpacing="15">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="*" />
+					</Grid.ColumnDefinitions>
+
+					<!-- Total Documents Card -->
+					<Frame Grid.Column="0" 
+                           BackgroundColor="{AppThemeBinding Light=White, Dark=#2D3748}"
+                           Padding="20" 
+                           CornerRadius="15"
+                           HasShadow="True">
+						<Frame.GestureRecognizers>
+							<TapGestureRecognizer Command="{Binding NavigateToCommand}" CommandParameter="//Belgeler" />
+						</Frame.GestureRecognizers>
+
+						<Grid RowSpacing="10">
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+							</Grid.RowDefinitions>
+
+							<Frame Grid.Row="0"
+                                   BackgroundColor="{AppThemeBinding Light=#E3F2FD, Dark=#1E3A8A}"
+                                   WidthRequest="50"
+                                   HeightRequest="50"
+                                   CornerRadius="25"
+                                   HasShadow="False"
+                                   HorizontalOptions="Start">
+								<Label Text="📄" 
+                                       FontSize="24"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+							</Frame>
+
+							<Label Grid.Row="1"
+                                   Text="{Binding ToplamBelgeSayisi}" 
+                                   FontSize="32" 
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light=#1976D2, Dark=#60A5FA}"
+                                   Opacity="{Binding ToplamBelgeSayisi, Converter={StaticResource CountToOpacityConverter}}">
+								<!-- FadeToAction kaldırıldı ve yerine Opacity bağlama kullanıldı -->
+							</Label>
+
+							<Label Grid.Row="2"
+                                   Text="Toplam Belge" 
+                                   FontSize="14" 
+                                   TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+						</Grid>
+					</Frame>
+
+					<!-- Storage Size Card -->
+					<Frame Grid.Column="1" 
+                           BackgroundColor="{AppThemeBinding Light=White, Dark=#2D3748}"
+                           Padding="20" 
+                           CornerRadius="15"
+                           HasShadow="True">
+						<Frame.GestureRecognizers>
+							<TapGestureRecognizer Command="{Binding NavigateToCommand}" CommandParameter="//Istatistikler" />
+						</Frame.GestureRecognizers>
+
+						<Grid RowSpacing="10">
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+							</Grid.RowDefinitions>
+
+							<Frame Grid.Row="0"
+                                   BackgroundColor="{AppThemeBinding Light=#FFF3E0, Dark=#7C2D12}"
+                                   WidthRequest="50"
+                                   HeightRequest="50"
+                                   CornerRadius="25"
+                                   HasShadow="False"
+                                   HorizontalOptions="Start">
+								<Label Text="💾" 
+                                       FontSize="24"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+							</Frame>
+
+							<Label Grid.Row="1"
+                                   Text="{Binding ToplamDosyaBoyutuMetni}" 
+                                   FontSize="24" 
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light=#F57C00, Dark=#FB923C}" />
+
+							<Label Grid.Row="2"
+                                   Text="Toplam Boyut" 
+                                   FontSize="14" 
+                                   TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+						</Grid>
+					</Frame>
+				</Grid>
+
+				<!-- Quick Actions with Hover Effects -->
+				<Frame Grid.Row="2"
+                       BackgroundColor="{AppThemeBinding Light=White, Dark=#2D3748}"
+                       Padding="20"
+                       CornerRadius="15"
                        HasShadow="True">
-                    <StackLayout>
-                        <Label Text="Toplam Boyut" 
-                               FontSize="14" 
-                               TextColor="DarkRed"
-                               HorizontalTextAlignment="Center" />
-                        <Label Text="{Binding ToplamDosyaBoyutuMetni}" 
-                               FontSize="16" 
+					<StackLayout Spacing="15">
+						<Label Text="⚡ Hızlı İşlemler" 
+                               FontSize="18" 
                                FontAttributes="Bold"
-                               TextColor="DarkRed"
-                               HorizontalTextAlignment="Center" />
-                    </StackLayout>
-                </Frame>
-            </Grid>
+                               TextColor="{AppThemeBinding Light=#1E293B, Dark=#F1F5F9}" />
 
-            <!-- Hızlı Erişim Butonları -->
-            <Grid Grid.Row="2" RowSpacing="10">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+						<Grid RowSpacing="10" ColumnSpacing="10">
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+							</Grid.RowDefinitions>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="*" />
+							</Grid.ColumnDefinitions>
 
-                <!-- İlk Satır Butonları -->
-                <Grid Grid.Row="0" ColumnSpacing="10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
+							<!-- Add Document Button -->
+							<Button Grid.Row="0" Grid.Column="0"
+                                    Text="➕ Belge Ekle"
+                                    FontSize="16"
+                                    FontAttributes="Bold"
+                                    BackgroundColor="{AppThemeBinding Light=#3B82F6, Dark=#2563EB}"
+                                    TextColor="White"
+                                    CornerRadius="12"
+                                    HeightRequest="55"
+                                    Command="{Binding BelgeEkleCommand}">
+								<Button.Shadow>
+									<Shadow Brush="{AppThemeBinding Light=#3B82F6, Dark=#1E40AF}"
+                                            Radius="10"
+                                            Opacity="0.3"
+                                            Offset="0,5" />
+								</Button.Shadow>
+							</Button>
 
-                    <Button Grid.Column="0"
-                            Text="Belge Ekle"
-                            FontSize="16"
-                            BackgroundColor="Blue"
-                            TextColor="White"
-                            CornerRadius="5"
-                            Command="{Binding BelgeEkleCommand}" />
+							<!-- Refresh Button -->
+							<Button Grid.Row="0" Grid.Column="1"
+                                    Text="🔄 Yenile"
+                                    FontSize="16"
+                                    FontAttributes="Bold"
+                                    BackgroundColor="{AppThemeBinding Light=#10B981, Dark=#059669}"
+                                    TextColor="White"
+                                    CornerRadius="12"
+                                    HeightRequest="55"
+                                    Command="{Binding YenileCommand}">
+								<Button.Shadow>
+									<Shadow Brush="{AppThemeBinding Light=#10B981, Dark=#047857}"
+                                            Radius="10"
+                                            Opacity="0.3"
+                                            Offset="0,5" />
+								</Button.Shadow>
+							</Button>
 
-                    <Button Grid.Column="1"
-                            Text="Yenile"
-                            FontSize="16"
-                            BackgroundColor="Orange"
-                            TextColor="White"
-                            CornerRadius="5"
-                            Command="{Binding YenileCommand}" />
-                </Grid>
+							<!-- Tags Button -->
+							<Button Grid.Row="1" Grid.Column="0"
+                                    Text="🏷️ Etiketler"
+                                    FontSize="16"
+                                    FontAttributes="Bold"
+                                    BackgroundColor="{AppThemeBinding Light=#F59E0B, Dark=#D97706}"
+                                    TextColor="White"
+                                    CornerRadius="12"
+                                    HeightRequest="55"
+                                    Command="{Binding EtiketlerCommand}">
+								<Button.Shadow>
+									<Shadow Brush="{AppThemeBinding Light=#F59E0B, Dark=#B45309}"
+                                            Radius="10"
+                                            Opacity="0.3"
+                                            Offset="0,5" />
+								</Button.Shadow>
+							</Button>
 
-                <!-- Yeni Arayüzler için Hızlı Erişim -->
-                <Grid Grid.Row="1" ColumnSpacing="5" RowSpacing="5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
+							<!-- Statistics Button -->
+							<Button Grid.Row="1" Grid.Column="1"
+                                    Text="📊 İstatistikler"
+                                    FontSize="16"
+                                    FontAttributes="Bold"
+                                    BackgroundColor="{AppThemeBinding Light=#8B5CF6, Dark=#7C3AED}"
+                                    TextColor="White"
+                                    CornerRadius="12"
+                                    HeightRequest="55"
+                                    Command="{Binding IstatistiklerCommand}">
+								<Button.Shadow>
+									<Shadow Brush="{AppThemeBinding Light=#8B5CF6, Dark=#6D28D9}"
+                                            Radius="10"
+                                            Opacity="0.3"
+                                            Offset="0,5" />
+								</Button.Shadow>
+							</Button>
+						</Grid>
+					</StackLayout>
+				</Frame>
 
-                    <Button Grid.Column="0"
-                            Text="🏷️ Etiketler"
-                            FontSize="12"
-                            BackgroundColor="#D69E2E"
-                            TextColor="White"
-                            CornerRadius="5"
-                            Command="{Binding EtiketlerCommand}" />
+				<!-- Feature Cards -->
+				<ScrollView Grid.Row="3" Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+					<StackLayout Orientation="Horizontal" Spacing="15">
 
-                    <Button Grid.Column="1"
-                            Text="📊 İstatistik"
-                            FontSize="12"
-                            BackgroundColor="#3182CE"
-                            TextColor="White"
-                            CornerRadius="5"
-                            Command="{Binding IstatistiklerCommand}" />
+						<!-- History Card -->
+						<Frame BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#374151}"
+                               Padding="20"
+                               CornerRadius="15"
+                               WidthRequest="160"
+                               HasShadow="True">
+							<Frame.GestureRecognizers>
+								<TapGestureRecognizer Command="{Binding GecmisCommand}" />
+							</Frame.GestureRecognizers>
 
-                    <Button Grid.Column="2"
-                            Text="📋 Geçmiş"
-                            FontSize="12"
-                            BackgroundColor="#805AD5"
-                            TextColor="White"
-                            CornerRadius="5"
-                            Command="{Binding GecmisCommand}" />
+							<StackLayout Spacing="10">
+								<Frame BackgroundColor="{AppThemeBinding Light=#DDD6FE, Dark=#6D28D9}"
+                                       WidthRequest="40"
+                                       HeightRequest="40"
+                                       CornerRadius="20"
+                                       HasShadow="False"
+                                       HorizontalOptions="Start">
+									<Label Text="📋" 
+                                           FontSize="20"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center" />
+								</Frame>
 
-                    <Button Grid.Column="3"
-                            Text="👥 Kullanıcı"
-                            FontSize="12"
-                            BackgroundColor="#38A169"
-                            TextColor="White"
-                            CornerRadius="5"
-                            Command="{Binding KullanicilarCommand}" />
-                </Grid>
-            </Grid>
+								<Label Text="İşlem Geçmişi" 
+                                       FontSize="16" 
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light=#1E293B, Dark=#F1F5F9}" />
 
-            <!-- Son Belgeler -->
-            <StackLayout Grid.Row="3" Spacing="10">
-                <Label Text="Son Eklenen Belgeler" 
-                       FontSize="18" 
-                       FontAttributes="Bold"
-                       TextColor="Black" />
-                
-                <CollectionView ItemsSource="{Binding SonBelgeler}"
-                                SelectionMode="Single">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:Belge">
-                            <Grid Padding="10" BackgroundColor="White">
-                                <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AnaSayfaVM}}, Path=BelgeAcCommand}"
-                                                          CommandParameter="{Binding .}" />
-                                </Grid.GestureRecognizers>
-                                
-                                <Frame BackgroundColor="LightGray" 
-                                       Padding="10" 
-                                       CornerRadius="5"
-                                       HasShadow="True">
-                                    <StackLayout>
-                                        <Label Text="Örnek Belge" 
-                                               FontSize="16" 
-                                               FontAttributes="Bold"
-                                               TextColor="Black" />
-                                        <Label Text="{Binding YuklemeTarihi, StringFormat='{0:dd.MM.yyyy HH:mm}'}" 
-                                               FontSize="12" 
-                                               TextColor="Gray" />
-                                        <Label Text="{Binding BelgeTipi}" 
-                                               FontSize="12" 
-                                               TextColor="Blue" />
-                                    </StackLayout>
-                                </Frame>
-                            </Grid>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </StackLayout>
+								<Label Text="Son işlemleri görüntüle" 
+                                       FontSize="12" 
+                                       TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}"
+                                       LineBreakMode="WordWrap" />
+							</StackLayout>
+						</Frame>
 
-            <!-- Loading Indicator -->
-            <ActivityIndicator Grid.Row="4"
-                              IsVisible="{Binding IsBusy}"
-                              IsRunning="{Binding IsBusy}"
-                              Color="Blue"
+						<!-- Users Card -->
+						<Frame BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#374151}"
+                               Padding="20"
+                               CornerRadius="15"
+                               WidthRequest="160"
+                               HasShadow="True">
+							<Frame.GestureRecognizers>
+								<TapGestureRecognizer Command="{Binding KullanicilarCommand}" />
+							</Frame.GestureRecognizers>
+
+							<StackLayout Spacing="10">
+								<Frame BackgroundColor="{AppThemeBinding Light=#BBF7D0, Dark=#065F46}"
+                                       WidthRequest="40"
+                                       HeightRequest="40"
+                                       CornerRadius="20"
+                                       HasShadow="False"
+                                       HorizontalOptions="Start">
+									<Label Text="👥" 
+                                           FontSize="20"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center" />
+								</Frame>
+
+								<Label Text="Kullanıcılar" 
+                                       FontSize="16" 
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light=#1E293B, Dark=#F1F5F9}" />
+
+								<Label Text="Kullanıcı yönetimi" 
+                                       FontSize="12" 
+                                       TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}"
+                                       LineBreakMode="WordWrap" />
+							</StackLayout>
+						</Frame>
+
+						<!-- Settings Card -->
+						<Frame BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#374151}"
+                               Padding="20"
+                               CornerRadius="15"
+                               WidthRequest="160"
+                               HasShadow="True">
+							<Frame.GestureRecognizers>
+								<TapGestureRecognizer Command="{Binding NavigateToCommand}" CommandParameter="//Ayarlar" />
+							</Frame.GestureRecognizers>
+
+							<StackLayout Spacing="10">
+								<Frame BackgroundColor="{AppThemeBinding Light=#FED7AA, Dark=#7C2D12}"
+                                       WidthRequest="40"
+                                       HeightRequest="40"
+                                       CornerRadius="20"
+                                       HasShadow="False"
+                                       HorizontalOptions="Start">
+									<Label Text="⚙️" 
+                                           FontSize="20"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center" />
+								</Frame>
+
+								<Label Text="Ayarlar" 
+                                       FontSize="16" 
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light=#1E293B, Dark=#F1F5F9}" />
+
+								<Label Text="Uygulama ayarları" 
+                                       FontSize="12" 
+                                       TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}"
+                                       LineBreakMode="WordWrap" />
+							</StackLayout>
+						</Frame>
+					</StackLayout>
+				</ScrollView>
+
+				<!-- Recent Documents Section -->
+				<Frame Grid.Row="4"
+                       BackgroundColor="{AppThemeBinding Light=White, Dark=#2D3748}"
+                       Padding="20"
+                       CornerRadius="15"
+                       HasShadow="True">
+					<StackLayout Spacing="15">
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="Auto" />
+							</Grid.ColumnDefinitions>
+
+							<Label Grid.Column="0"
+                                   Text="📑 Son Eklenen Belgeler" 
+                                   FontSize="18" 
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light=#1E293B, Dark=#F1F5F9}"
+                                   VerticalOptions="Center" />
+
+							<Button Grid.Column="1"
+                                    Text="Tümü"
+                                    FontSize="12"
+                                    BackgroundColor="Transparent"
+                                    TextColor="{AppThemeBinding Light=#3B82F6, Dark=#60A5FA}"
+                                    Command="{Binding NavigateToCommand}"
+                                    CommandParameter="//Belgeler" />
+						</Grid>
+
+						<CollectionView ItemsSource="{Binding SonBelgeler}"
+                                        SelectionMode="Single">
+							<CollectionView.EmptyView>
+								<StackLayout Padding="40" VerticalOptions="Center">
+									<Label Text="📭" 
+                                           FontSize="48"
+                                           HorizontalOptions="Center"
+                                           Opacity="0.5" />
+									<Label Text="Henüz belge yok" 
+                                           FontSize="16" 
+                                           TextColor="{AppThemeBinding Light=#94A3B8, Dark=#64748B}"
+                                           HorizontalOptions="Center"
+                                           Margin="0,10,0,0" />
+								</StackLayout>
+							</CollectionView.EmptyView>
+
+							<CollectionView.ItemTemplate>
+								<DataTemplate x:DataType="models:Belge">
+									<Grid Padding="0,5">
+										<Frame BackgroundColor="{AppThemeBinding Light=#F8F9FA, Dark=#1E293B}" 
+                                               Padding="15" 
+                                               CornerRadius="10"
+                                               HasShadow="False"
+                                               BorderColor="{AppThemeBinding Light=#E5E7EB, Dark=#374151}">
+											<Frame.GestureRecognizers>
+												<TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AnaSayfaVM}}, Path=BelgeAcCommand}"
+                                                                      CommandParameter="{Binding .}" />
+											</Frame.GestureRecognizers>
+
+											<Grid ColumnSpacing="15">
+												<Grid.ColumnDefinitions>
+													<ColumnDefinition Width="Auto" />
+													<ColumnDefinition Width="*" />
+													<ColumnDefinition Width="Auto" />
+												</Grid.ColumnDefinitions>
+
+												<!-- Document Type Icon -->
+												<Frame Grid.Column="0"
+                                                       BackgroundColor="{Binding BelgeTipi, Converter={StaticResource BelgeTipiToColorConverter}}"
+                                                       WidthRequest="40"
+                                                       HeightRequest="40"
+                                                       CornerRadius="8"
+                                                       HasShadow="False">
+													<Label Text="{Binding BelgeTipi, Converter={StaticResource BelgeTipiToIconConverter}}" 
+                                                           FontSize="18"
+                                                           TextColor="White"
+                                                           HorizontalOptions="Center"
+                                                           VerticalOptions="Center" />
+												</Frame>
+
+												<!-- Document Info -->
+												<StackLayout Grid.Column="1" Spacing="3">
+													<Label Text="{Binding BelgeAdi}" 
+                                                           FontSize="15" 
+                                                           FontAttributes="Bold"
+                                                           TextColor="{AppThemeBinding Light=#1E293B, Dark=#F1F5F9}"
+                                                           LineBreakMode="TailTruncation" />
+
+													<Label FontSize="12" 
+                                                           TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}">
+														<Label.FormattedText>
+															<FormattedString>
+																<Span Text="{Binding YuklemeTarihi, StringFormat='{0:dd MMM}'}" />
+																<Span Text=" • " />
+																<Span Text="{Binding DosyaBoyutu, Converter={StaticResource FileSizeConverter}}" />
+															</FormattedString>
+														</Label.FormattedText>
+													</Label>
+												</StackLayout>
+
+												<!-- Arrow -->
+												<Label Grid.Column="2"
+                                                       Text="›"
+                                                       FontSize="24"
+                                                       TextColor="{AppThemeBinding Light=#CBD5E1, Dark=#475569}"
+                                                       VerticalOptions="Center" />
+											</Grid>
+										</Frame>
+									</Grid>
+								</DataTemplate>
+							</CollectionView.ItemTemplate>
+						</CollectionView>
+					</StackLayout>
+				</Frame>
+
+				<!-- Popular Documents Section -->
+				<Frame Grid.Row="5"
+                       BackgroundColor="{AppThemeBinding Light=White, Dark=#2D3748}"
+                       Padding="20"
+                       CornerRadius="15"
+                       HasShadow="True"
+                       Margin="0,0,0,20">
+					<StackLayout Spacing="15">
+						<Label Text="🔥 Popüler Belgeler" 
+                               FontSize="18" 
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#1E293B, Dark=#F1F5F9}" />
+
+						<CollectionView ItemsSource="{Binding PopulerBelgeler}"
+                                        SelectionMode="Single">
+							<CollectionView.ItemsLayout>
+								<LinearItemsLayout Orientation="Horizontal" ItemSpacing="10" />
+							</CollectionView.ItemsLayout>
+
+							<CollectionView.EmptyView>
+								<Label Text="Henüz popüler belge yok" 
+                                       FontSize="14" 
+                                       TextColor="{AppThemeBinding Light=#94A3B8, Dark=#64748B}"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+							</CollectionView.EmptyView>
+
+							<CollectionView.ItemTemplate>
+								<DataTemplate x:DataType="models:Belge">
+									<Frame BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#374151}" 
+                                           Padding="15" 
+                                           CornerRadius="12"
+                                           WidthRequest="200"
+                                           HasShadow="True">
+										<Frame.GestureRecognizers>
+											<TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AnaSayfaVM}}, Path=BelgeAcCommand}"
+                                                                  CommandParameter="{Binding .}" />
+										</Frame.GestureRecognizers>
+
+										<StackLayout Spacing="10">
+											<Grid>
+												<Grid.ColumnDefinitions>
+													<ColumnDefinition Width="*" />
+													<ColumnDefinition Width="Auto" />
+												</Grid.ColumnDefinitions>
+
+												<Label Grid.Column="0"
+                                                       Text="{Binding BelgeAdi}" 
+                                                       FontSize="14" 
+                                                       FontAttributes="Bold"
+                                                       TextColor="{AppThemeBinding Light=#1E293B, Dark=#F1F5F9}"
+                                                       LineBreakMode="TailTruncation" />
+
+												<Label Grid.Column="1"
+                                                       Text="{Binding GoruntulenmeSayisi, StringFormat='👁 {0}'}" 
+                                                       FontSize="12" 
+                                                       TextColor="{AppThemeBinding Light=#6366F1, Dark=#818CF8}" />
+											</Grid>
+
+											<Label Text="{Binding BelgeTipi}" 
+                                                   FontSize="11" 
+                                                   TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+										</StackLayout>
+									</Frame>
+								</DataTemplate>
+							</CollectionView.ItemTemplate>
+						</CollectionView>
+					</StackLayout>
+				</Frame>
+
+			</Grid>
+		</ScrollView>
+
+		<!-- Loading Overlay -->
+		<Grid IsVisible="{Binding IsBusy}"
+              BackgroundColor="{AppThemeBinding Light=#000000, Dark=#000000}"
+              Opacity="0.5">
+			<ActivityIndicator IsRunning="True"
+                              Color="{AppThemeBinding Light=#3B82F6, Dark=#60A5FA}"
+                              WidthRequest="60"
+                              HeightRequest="60"
                               VerticalOptions="Center"
                               HorizontalOptions="Center" />
-
-        </Grid>
-    </ScrollView>
-</ContentPage> 
+		</Grid>
+	</Grid>
+</ContentPage>

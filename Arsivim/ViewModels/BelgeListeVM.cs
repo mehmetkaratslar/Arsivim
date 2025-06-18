@@ -30,6 +30,9 @@ namespace Arsivim.ViewModels
             BelgeEkleCommand = new Command(async () => await BelgeEkleAsync());
             BelgeSecCommand = new Command<Belge>(async (belge) => await BelgeSecAsync(belge));
             BelgeSilCommand = new Command<Belge>(async (belge) => await BelgeSilAsync(belge));
+            BelgeIndirCommand = new Command<Belge>(async (belge) => await BelgeIndirAsync(belge));
+            BelgePaylasCommand = new Command<Belge>(async (belge) => await BelgePaylasAsync(belge));
+            BelgeAcCommand = new Command<Belge>(async (belge) => await BelgeAcAsync(belge));
             FiltreTemizleCommand = new Command(async () => await FiltreTemizleAsync());
 
             // Belge tiplerini yükle
@@ -43,7 +46,19 @@ namespace Arsivim.ViewModels
         public string AramaMetni
         {
             get => _aramaMetni;
-            set => SetProperty(ref _aramaMetni, value);
+            set
+            {
+                SetProperty(ref _aramaMetni, value);
+                // 500ms gecikme ile otomatik arama
+                _ = Task.Run(async () =>
+                {
+                    await Task.Delay(500);
+                    if (_aramaMetni == value) // Hala aynı metin ise ara
+                    {
+                        await AraAsync();
+                    }
+                });
+            }
         }
 
         public BelgeTipi SeciliBelgeTipi
@@ -84,6 +99,9 @@ namespace Arsivim.ViewModels
         public ICommand BelgeEkleCommand { get; }
         public ICommand BelgeSecCommand { get; }
         public ICommand BelgeSilCommand { get; }
+        public ICommand BelgeIndirCommand { get; }
+        public ICommand BelgePaylasCommand { get; }
+        public ICommand BelgeAcCommand { get; }
         public ICommand FiltreTemizleCommand { get; }
 
         #endregion
@@ -182,7 +200,7 @@ namespace Arsivim.ViewModels
         private async Task BelgeEkleAsync()
         {
             // Belge ekleme sayfasına navigasyon
-            await Shell.Current.GoToAsync("//BelgeEkle");
+            await Shell.Current.GoToAsync("///BelgeEkle");
         }
 
         private async Task BelgeSecAsync(Belge belge)
@@ -190,7 +208,7 @@ namespace Arsivim.ViewModels
             if (belge == null) return;
 
             SeciliBelge = belge;
-            await Shell.Current.GoToAsync($"//BelgeDetay?belgeId={belge.BelgeID}");
+            await Shell.Current.GoToAsync($"///BelgeDetay?belgeId={belge.BelgeID}");
         }
 
         private async Task BelgeSilAsync(Belge belge)
@@ -221,6 +239,101 @@ namespace Arsivim.ViewModels
             }
         }
 
+        private async Task BelgeIndirAsync(Belge belge)
+        {
+            if (belge == null) return;
+
+            await ExecuteAsync(async () =>
+            {
+                try
+                {
+                    // Belge dosyasını al
+                    var dosyaBytes = await _belgeYonetimi.BelgeDosyasiniIndirAsync(belge.BelgeID);
+                    if (dosyaBytes == null || dosyaBytes.Length == 0)
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Hata", "Belge dosyası bulunamadı.", "Tamam");
+                        return;
+                    }
+
+                    // Dosya adını oluştur
+                    var fileName = $"{belge.BelgeAdi}{belge.DosyaTipi}";
+                    
+                    // Platform-specific indirme işlemi
+                    await SaveFileAsync(fileName, dosyaBytes);
+                    
+                    await Application.Current.MainPage.DisplayAlert("Başarılı", 
+                        $"'{fileName}' dosyası başarıyla indirildi.", "Tamam");
+                }
+                catch (Exception ex)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Hata", 
+                        $"Dosya indirilirken bir hata oluştu: {ex.Message}", "Tamam");
+                }
+            });
+        }
+
+        private async Task BelgePaylasAsync(Belge belge)
+        {
+            if (belge == null) return;
+
+            await ExecuteAsync(async () =>
+            {
+                try
+                {
+                    // Geçici dosya yolu al
+                    var tempFilePath = await _belgeYonetimi.BelgePaylasAsync(belge.BelgeID);
+                    if (string.IsNullOrEmpty(tempFilePath))
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Hata", "Paylaşım için dosya hazırlanamadı.", "Tamam");
+                        return;
+                    }
+
+                    // Paylaşım işlemini başlat
+                    await Share.Default.RequestAsync(new ShareFileRequest
+                    {
+                        Title = $"{belge.BelgeAdi} - Belge Paylaşımı",
+                        File = new ShareFile(tempFilePath)
+                    });
+                }
+                catch (Exception ex)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Hata", 
+                        $"Dosya paylaşılırken bir hata oluştu: {ex.Message}", "Tamam");
+                }
+            });
+        }
+
+        private async Task SaveFileAsync(string fileName, byte[] fileBytes)
+        {
+            try
+            {
+#if ANDROID
+                // Android için Downloads klasörüne kaydet
+                var downloadsPath = Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryDownloads);
+                var filePath = Path.Combine(downloadsPath!.AbsolutePath, fileName);
+                
+                await File.WriteAllBytesAsync(filePath, fileBytes);
+#elif WINDOWS
+                // Windows için Documents/Downloads klasörüne kaydet
+                var downloadsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+                if (!Directory.Exists(downloadsPath))
+                    Directory.CreateDirectory(downloadsPath);
+                    
+                var filePath = Path.Combine(downloadsPath, fileName);
+                await File.WriteAllBytesAsync(filePath, fileBytes);
+#else
+                // Diğer platformlar için geçici klasöre kaydet
+                var tempPath = Path.GetTempPath();
+                var filePath = Path.Combine(tempPath, fileName);
+                await File.WriteAllBytesAsync(filePath, fileBytes);
+#endif
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Dosya kaydedilirken hata oluştu: {ex.Message}");
+            }
+        }
+
         private void BelgeTipleriniYukle()
         {
             BelgeTipleri.Clear();
@@ -228,6 +341,44 @@ namespace Arsivim.ViewModels
             {
                 BelgeTipleri.Add(tip);
             }
+        }
+
+        private async Task BelgeAcAsync(Belge belge)
+        {
+            if (belge == null) return;
+
+            await ExecuteAsync(async () =>
+            {
+                try
+                {
+                    // Belge dosyasını al
+                    var dosyaBytes = await _belgeYonetimi.BelgeDosyasiniIndirAsync(belge.BelgeID);
+                    if (dosyaBytes == null || dosyaBytes.Length == 0)
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Hata", "Belge dosyası bulunamadı.", "Tamam");
+                        return;
+                    }
+
+                    // Geçici dosya oluştur
+                    var fileName = $"{belge.BelgeAdi}{belge.DosyaTipi}";
+                    var tempPath = Path.GetTempPath();
+                    var filePath = Path.Combine(tempPath, fileName);
+                    
+                    await File.WriteAllBytesAsync(filePath, dosyaBytes);
+
+                    // Dosyayı varsayılan uygulama ile aç
+                    await Launcher.Default.OpenAsync(new OpenFileRequest
+                    {
+                        File = new ReadOnlyFile(filePath),
+                        Title = $"{belge.BelgeAdi} - Belge Görüntüle"
+                    });
+                }
+                catch (Exception ex)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Hata", 
+                        $"Belge açılırken bir hata oluştu: {ex.Message}", "Tamam");
+                }
+            });
         }
 
         public string BelgeBoyutuFormatla(long boyut)

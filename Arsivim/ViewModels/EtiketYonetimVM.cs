@@ -183,8 +183,36 @@ namespace Arsivim.ViewModels
         {
             await ExecuteAsync(async () =>
             {
-                // Arama işlemi simülasyonu
-                await Task.Delay(100);
+                if (string.IsNullOrWhiteSpace(AramaMetni))
+                {
+                    await YenileAsync();
+                    return;
+                }
+
+                var tumEtiketler = new[]
+                {
+                    new Etiket { EtiketID = 1, EtiketAdi = "Önemli", Renk = "#F44336", Aciklama = "Kritik belgeler için" },
+                    new Etiket { EtiketID = 2, EtiketAdi = "İş", Renk = "#2196F3", Aciklama = "İş ile ilgili belgeler" },
+                    new Etiket { EtiketID = 3, EtiketAdi = "Kişisel", Renk = "#4CAF50", Aciklama = "Kişisel belgeler" },
+                    new Etiket { EtiketID = 4, EtiketAdi = "Arşiv", Renk = "#FF9800", Aciklama = "Eski belgeler" },
+                    new Etiket { EtiketID = 5, EtiketAdi = "Fatura", Renk = "#9C27B0", Aciklama = "Fatura ve ödemeler" },
+                    new Etiket { EtiketID = 6, EtiketAdi = "Sözleşme", Renk = "#795548", Aciklama = "Hukuki belgeler" },
+                    new Etiket { EtiketID = 7, EtiketAdi = "Sağlık", Renk = "#E91E63", Aciklama = "Sağlık raporları" }
+                };
+
+                var filtrelenmisEtiketler = tumEtiketler
+                    .Where(e => e.EtiketAdi.ToLowerInvariant().Contains(AramaMetni.ToLowerInvariant()) ||
+                               (e.Aciklama?.ToLowerInvariant().Contains(AramaMetni.ToLowerInvariant()) ?? false))
+                    .ToList();
+
+                Etiketler.Clear();
+                foreach (var etiket in filtrelenmisEtiketler)
+                {
+                    Etiketler.Add(etiket);
+                }
+
+                OnPropertyChanged(nameof(ToplamEtiketSayisi), nameof(ToplamEtiketSayisiMetni), nameof(EtiketYok), nameof(Metin));
+                await Task.Delay(300); // Arama simülasyonu
             });
         }
 
@@ -195,15 +223,50 @@ namespace Arsivim.ViewModels
 
         private async Task EtiketKaydetAsync()
         {
-            if (SeciliEtiket != null)
+            if (string.IsNullOrWhiteSpace(YeniEtiketAdi))
             {
-                // Güncelleme işlemi
-                SeciliEtiket.EtiketAdi = YeniEtiketAdi.Trim();
-                SeciliEtiket.Renk = YeniEtiketRengi;
-                
-                await Task.Delay(100);
-                await DuzenlemeIptalAsync();
+                await Application.Current.MainPage.DisplayAlert("Uyarı", "Etiket adı boş olamaz.", "Tamam");
+                return;
             }
+
+            await ExecuteAsync(async () =>
+            {
+                if (DuzenlemeModu && SeciliEtiket != null)
+                {
+                    // Güncelleme işlemi
+                    SeciliEtiket.EtiketAdi = YeniEtiketAdi.Trim();
+                    SeciliEtiket.Renk = YeniEtiketRengi;
+                    SeciliEtiket.Aciklama = string.IsNullOrWhiteSpace(YeniEtiketAciklama) ? null : YeniEtiketAciklama.Trim();
+
+                    await Application.Current.MainPage.DisplayAlert("Başarılı", "Etiket başarıyla güncellendi!", "Tamam");
+                    
+                    // Düzenleme modundan çık
+                    await DuzenlemeIptalAsync();
+                }
+                else
+                {
+                    // Yeni etiket ekleme
+                    var yeniEtiket = new Etiket
+                    {
+                        EtiketID = Etiketler.Count + 1,
+                        EtiketAdi = YeniEtiketAdi.Trim(),
+                        Renk = YeniEtiketRengi,
+                        Aciklama = string.IsNullOrWhiteSpace(YeniEtiketAciklama) ? null : YeniEtiketAciklama.Trim(),
+                        OlusturulmaTarihi = DateTime.Now
+                    };
+
+                    Etiketler.Add(yeniEtiket);
+                    await Application.Current.MainPage.DisplayAlert("Başarılı", "Etiket başarıyla eklendi!", "Tamam");
+                    
+                    // Formu temizle
+                    YeniEtiketAdi = string.Empty;
+                    YeniEtiketRengi = "#3182CE";
+                    YeniEtiketAciklama = string.Empty;
+                }
+
+                OnPropertyChanged(nameof(ToplamEtiketSayisi), nameof(ToplamEtiketSayisiMetni), nameof(EtiketYok), nameof(Metin));
+                await Task.Delay(500); // Simüle edilen kaydetme işlemi
+            });
         }
 
         private async Task DuzenlemeIptalAsync()

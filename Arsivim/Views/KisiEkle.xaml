@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="Arsivim.Views.KisiEkle"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Arsivim.ViewModels"
+             Title="{Binding Title, FallbackValue='Yeni Kişi Ekle'}"
+             x:DataType="viewmodels:KisiEkleVM">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Stil tanımlamaları -->
+            <Style x:Key="CardFrameStyle" TargetType="Frame">
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="CornerRadius" Value="15" />
+                <Setter Property="HasShadow" Value="True" />
+                <Setter Property="Padding" Value="20" />
+                <Setter Property="Margin" Value="10,10,10,10" />
+            </Style>
+            
+            <Style x:Key="ModernEntryStyle" TargetType="Entry">
+                <Setter Property="BackgroundColor" Value="#F8F9FA" />
+                <Setter Property="TextColor" Value="#343A40" />
+                <Setter Property="PlaceholderColor" Value="#6C757D" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HeightRequest" Value="50" />
+            </Style>
+            
+            <Style x:Key="ModernEditorStyle" TargetType="Editor">
+                <Setter Property="BackgroundColor" Value="#F8F9FA" />
+                <Setter Property="TextColor" Value="#343A40" />
+                <Setter Property="PlaceholderColor" Value="#6C757D" />
+                <Setter Property="FontSize" Value="16" />
+            </Style>
+            
+            <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="#6366F1" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="CornerRadius" Value="12" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="HeightRequest" Value="50" />
+            </Style>
+            
+            <Style x:Key="SecondaryButtonStyle" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="#E5E7EB" />
+                <Setter Property="TextColor" Value="#374151" />
+                <Setter Property="CornerRadius" Value="12" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HeightRequest" Value="50" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Ana İçerik -->
+        <ScrollView Grid.Row="0" BackgroundColor="#F3F4F6">
+            <StackLayout Spacing="0" Padding="0,20,0,20">
+
+                <!-- Başlık Kartı -->
+                <Frame Style="{StaticResource CardFrameStyle}">
+                    <StackLayout Spacing="10">
+                        <Label Text="{Binding DuzenlemeModu, Converter={StaticResource BoolToStringConverter}, ConverterParameter='👤 Kişi Düzenle|👤 Yeni Kişi Ekle'}" 
+                               FontSize="24" 
+                               FontAttributes="Bold" 
+                               TextColor="#1F2937"
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="{Binding DuzenlemeModu, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Kişi bilgilerini düzenleyin|Yeni kişi bilgilerini girin'}" 
+                               FontSize="14" 
+                               TextColor="#6B7280"
+                               HorizontalTextAlignment="Center" />
+                    </StackLayout>
+                </Frame>
+
+                <!-- Kişisel Bilgiler Kartı -->
+                <Frame Style="{StaticResource CardFrameStyle}">
+                    <StackLayout Spacing="15">
+                        <Label Text="👤 Kişisel Bilgiler" 
+                               FontSize="18" 
+                               FontAttributes="Bold" 
+                               TextColor="#1F2937" />
+
+                        <!-- Ad -->
+                        <StackLayout Spacing="5">
+                            <Label Text="Ad*" 
+                                   FontSize="14" 
+                                   FontAttributes="Bold"
+                                   TextColor="#374151" />
+                            <Entry Text="{Binding Ad}" 
+                                   Placeholder="Kişinin adı..."
+                                   Style="{StaticResource ModernEntryStyle}" />
+                        </StackLayout>
+
+                        <!-- Soyad -->
+                        <StackLayout Spacing="5">
+                            <Label Text="Soyad*" 
+                                   FontSize="14" 
+                                   FontAttributes="Bold"
+                                   TextColor="#374151" />
+                            <Entry Text="{Binding Soyad}" 
+                                   Placeholder="Kişinin soyadı..."
+                                   Style="{StaticResource ModernEntryStyle}" />
+                        </StackLayout>
+
+                        <!-- Unvan -->
+                        <StackLayout Spacing="5">
+                            <Label Text="Unvan" 
+                                   FontSize="14" 
+                                   FontAttributes="Bold"
+                                   TextColor="#374151" />
+                            <Entry Text="{Binding Unvan}" 
+                                   Placeholder="Örn: Müdür, Mühendis..."
+                                   Style="{StaticResource ModernEntryStyle}" />
+                        </StackLayout>
+
+                        <!-- Şirket -->
+                        <StackLayout Spacing="5">
+                            <Label Text="Şirket" 
+                                   FontSize="14" 
+                                   FontAttributes="Bold"
+                                   TextColor="#374151" />
+                            <Entry Text="{Binding Sirket}" 
+                                   Placeholder="Çalıştığı şirket..."
+                                   Style="{StaticResource ModernEntryStyle}" />
+                        </StackLayout>
+                    </StackLayout>
+                </Frame>
+
+                <!-- İletişim Bilgileri Kartı -->
+                <Frame Style="{StaticResource CardFrameStyle}">
+                    <StackLayout Spacing="15">
+                        <Label Text="📞 İletişim Bilgileri" 
+                               FontSize="18" 
+                               FontAttributes="Bold" 
+                               TextColor="#1F2937" />
+
+                        <!-- Telefon -->
+                        <StackLayout Spacing="5">
+                            <Label Text="Telefon*" 
+                                   FontSize="14" 
+                                   FontAttributes="Bold"
+                                   TextColor="#374151" />
+                            <Entry Text="{Binding Telefon}" 
+                                   Placeholder="Örn: 0532 123 45 67"
+                                   Keyboard="Telephone"
+                                   Style="{StaticResource ModernEntryStyle}" />
+                        </StackLayout>
+
+                        <!-- E-posta -->
+                        <StackLayout Spacing="5">
+                            <Label Text="E-posta" 
+                                   FontSize="14" 
+                                   FontAttributes="Bold"
+                                   TextColor="#374151" />
+                            <Entry Text="{Binding Email}" 
+                                   Placeholder="ornek@email.com"
+                                   Keyboard="Email"
+                                   Style="{StaticResource ModernEntryStyle}" />
+                        </StackLayout>
+
+                        <!-- Adres -->
+                        <StackLayout Spacing="5">
+                            <Label Text="Adres" 
+                                   FontSize="14" 
+                                   FontAttributes="Bold"
+                                   TextColor="#374151" />
+                            <Editor Text="{Binding Adres}" 
+                                    Placeholder="Posta adresi..."
+                                    HeightRequest="100"
+                                    Style="{StaticResource ModernEditorStyle}" />
+                        </StackLayout>
+                    </StackLayout>
+                </Frame>
+
+                <!-- Notlar Kartı -->
+                <Frame Style="{StaticResource CardFrameStyle}">
+                    <StackLayout Spacing="15">
+                        <Label Text="📝 Notlar" 
+                               FontSize="18" 
+                               FontAttributes="Bold" 
+                               TextColor="#1F2937" />
+
+                        <StackLayout Spacing="5">
+                            <Label Text="Notlar" 
+                                   FontSize="14" 
+                                   FontAttributes="Bold"
+                                   TextColor="#374151" />
+                            <Editor Text="{Binding Notlar}" 
+                                    Placeholder="Kişi hakkında notlar..."
+                                    HeightRequest="100"
+                                    Style="{StaticResource ModernEditorStyle}" />
+                        </StackLayout>
+                    </StackLayout>
+                </Frame>
+
+            </StackLayout>
+        </ScrollView>
+
+        <!-- Alt Butonlar -->
+        <Frame Grid.Row="1" 
+               BackgroundColor="White" 
+               CornerRadius="0" 
+               HasShadow="True" 
+               Padding="20,15">
+            <Grid ColumnSpacing="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" 
+                        Text="İptal" 
+                        Style="{StaticResource SecondaryButtonStyle}"
+                        Command="{Binding IptalCommand}" />
+
+                <Button Grid.Column="1" 
+                        Text="{Binding DuzenlemeModu, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Güncelle|Kaydet'}" 
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        Command="{Binding KaydetCommand}" />
+            </Grid>
+        </Frame>
+
+        <!-- Loading Overlay -->
+        <Frame Grid.RowSpan="2"
+               BackgroundColor="#80000000"
+               IsVisible="{Binding IsBusy}"
+               HasShadow="False"
+               BorderColor="Transparent">
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               Color="White"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Center" />
+        </Frame>
+    </Grid>
+</ContentPage> 

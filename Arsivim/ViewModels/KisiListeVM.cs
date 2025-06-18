@@ -119,7 +119,7 @@ namespace Arsivim.ViewModels
 
         private async Task KisiEkleAsync()
         {
-            await Shell.Current.GoToAsync("//KisiEkle");
+            await Shell.Current.GoToAsync("///KisiEkle");
         }
 
         private async Task KisiSecAsync(Kisi kisi)
@@ -127,7 +127,7 @@ namespace Arsivim.ViewModels
             if (kisi == null) return;
 
             SeciliKisi = kisi;
-            await Shell.Current.GoToAsync($"//KisiDetay?kisiId={kisi.KisiID}");
+            await Shell.Current.GoToAsync($"///KisiDetay?kisiId={kisi.KisiID}");
         }
 
         private async Task KisiSilAsync(Kisi kisi)

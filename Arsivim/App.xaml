@@ -2,6 +2,7 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Arsivim"
+             xmlns:converters="clr-namespace:Arsivim.Converters"
              x:Class="Arsivim.App">
     <Application.Resources>
         <ResourceDictionary>
@@ -9,6 +10,21 @@
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            
+            <!-- Global Converters -->
+            <converters:IsNullConverter x:Key="IsNullConverter" />
+            <converters:IsNotNullConverter x:Key="IsNotNullConverter" />
+            <converters:BoolToInverseConverter x:Key="BoolToInverseConverter" />
+            <converters:BoolToStringConverter x:Key="BoolToStringConverter" />
+            <converters:CountToOpacityConverter x:Key="CountToOpacityConverter" />
+            <converters:BoolToFavoriteTextConverter x:Key="BoolToFavoriteTextConverter" />
+            <converters:BoolToFavoriteColorConverter x:Key="BoolToFavoriteColorConverter" />
+            <converters:BelgeTuruToColorConverter x:Key="BelgeTuruToColorConverter" />
+            <converters:PercentageToWidthConverter x:Key="PercentageToWidthConverter" />
+            <converters:IslemTuruToColorConverter x:Key="IslemTuruToColorConverter" />
+            <converters:IslemTuruToIconConverter x:Key="IslemTuruToIconConverter" />
+            <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <converters:BoolToTextConverter x:Key="BoolToTextConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

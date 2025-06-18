@@ -4,215 +4,517 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:Arsivim.ViewModels"
              Title="{Binding Title}"
-             x:DataType="viewmodels:AyarlarVM">
+             x:DataType="viewmodels:AyarlarVM"
+             BackgroundColor="{AppThemeBinding Light=#F8F9FA, Dark=#1A202C}">
+
+    <!-- Modern Gradient Background -->
+    <ContentPage.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="{AppThemeBinding Light=#E9ECEF, Dark=#1A202C}" Offset="0.0" />
+            <GradientStop Color="{AppThemeBinding Light=#F8F9FA, Dark=#2D3748}" Offset="1.0" />
+        </LinearGradientBrush>
+    </ContentPage.Background>
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Kaydet" 
-                     IconImageSource="save.png" 
+        <ToolbarItem Text="💾 Kaydet" 
                      Command="{Binding AyarlariKaydetCommand}" />
-        <ToolbarItem Text="Varsayılan" 
-                     IconImageSource="reset.png" 
+        <ToolbarItem Text="🔄 Sıfırla" 
                      Command="{Binding VarsayilanAyarlariYukleCommand}" />
     </ContentPage.ToolbarItems>
 
     <ScrollView>
-        <StackLayout Spacing="20" Padding="20">
+        <StackLayout Spacing="25" Padding="20">
+            
+            <!-- Modern Header -->
+            <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#2D3748}"
+                   Padding="25" 
+                   CornerRadius="20"
+                   HasShadow="True">
+                <Frame.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop Color="{AppThemeBinding Light=#667EEA, Dark=#4C1D95}" Offset="0.0" />
+                        <GradientStop Color="{AppThemeBinding Light=#764BA2, Dark=#6B21A8}" Offset="1.0" />
+                    </LinearGradientBrush>
+                </Frame.Background>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Column="0"
+                           Text="⚙️" 
+                           FontSize="40"
+                           VerticalOptions="Center"
+                           Margin="0,0,15,0" />
+
+                    <StackLayout Grid.Column="1" VerticalOptions="Center">
+                        <Label Text="Ayarlar ve Konfigürasyon" 
+                               FontSize="22" 
+                               FontAttributes="Bold"
+                               TextColor="White" />
+                        <Label Text="Uygulamanızı özelleştirin" 
+                               FontSize="14" 
+                               TextColor="White"
+                               Opacity="0.9" />
+                    </StackLayout>
+                </Grid>
+            </Frame>
 
             <!-- Genel Ayarlar -->
-            <Frame BackgroundColor="White" Padding="20" CornerRadius="10" HasShadow="True">
-                <StackLayout Spacing="15">
-                    <Label Text="Genel Ayarlar" FontSize="18" FontAttributes="Bold" TextColor="DarkBlue" />
-                    
-                    <Grid ColumnSpacing="10" RowSpacing="15">
+            <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#2D3748}" 
+                   Padding="25" 
+                   CornerRadius="20" 
+                   HasShadow="True">
+                <StackLayout Spacing="20">
+                    <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-
-                        <Label Grid.Row="0" Grid.Column="0" Text="Bildirimler Aktif" VerticalOptions="Center" />
-                        <Switch Grid.Row="0" Grid.Column="1" IsToggled="{Binding BildirimlerAktif}" />
-
-                        <Label Grid.Row="1" Grid.Column="0" Text="Güvenli Silme" VerticalOptions="Center" />
-                        <Switch Grid.Row="1" Grid.Column="1" IsToggled="{Binding GuvenceliSilme}" />
-
-                        <Label Grid.Row="2" Grid.Column="0" Text="Maksimum Dosya Boyutu (MB)" VerticalOptions="Center" />
-                        <Entry Grid.Row="2" Grid.Column="1" Text="{Binding MaksimumDosyaBoyutu}" 
-                               Keyboard="Numeric" WidthRequest="100" />
-                    </Grid>
-                </StackLayout>
-            </Frame>
-
-            <!-- Yedekleme Ayarları -->
-            <Frame BackgroundColor="White" Padding="20" CornerRadius="10" HasShadow="True">
-                <StackLayout Spacing="15">
-                    <Label Text="Yedekleme Ayarları" FontSize="18" FontAttributes="Bold" TextColor="Green" />
-                    
-                    <Grid ColumnSpacing="10" RowSpacing="15">
-                        <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-
-                        <Label Grid.Row="0" Grid.Column="0" Text="Otomatik Yedekleme" VerticalOptions="Center" />
-                        <Switch Grid.Row="0" Grid.Column="1" IsToggled="{Binding OtomatikYedekleme}" />
-
-                        <Label Grid.Row="1" Grid.Column="0" Text="Yedekleme Konumu:" FontAttributes="Bold" />
-                        <Button Grid.Row="1" Grid.Column="1" Text="Seç" Command="{Binding YedeklemeKonumuSecCommand}" />
-
-                        <Label Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding YedeklemeKonumu}" 
-                               FontSize="12" TextColor="Gray" LineBreakMode="WordWrap" />
-
-                        <Label Grid.Row="3" Grid.Column="0" Text="Son Yedekleme:" FontAttributes="Bold" />
-                        <Label Grid.Row="3" Grid.Column="1" Text="{Binding SonYedeklemeTarihi}" 
-                               FontSize="12" TextColor="Gray" />
-                    </Grid>
-
-                    <Button Text="Manuel Yedekleme Başlat"
-                            BackgroundColor="Green"
-                            TextColor="White"
-                            CornerRadius="5"
-                            Command="{Binding YedeklemeBaslatCommand}" />
-                </StackLayout>
-            </Frame>
-
-            <!-- Senkronizasyon Ayarları -->
-            <Frame BackgroundColor="White" Padding="20" CornerRadius="10" HasShadow="True">
-                <StackLayout Spacing="15">
-                    <Label Text="Senkronizasyon Ayarları" FontSize="18" FontAttributes="Bold" TextColor="Purple" />
-                    
-                    <Grid ColumnSpacing="10" RowSpacing="15">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-
-                        <Label Grid.Row="0" Grid.Column="0" Text="Senkronizasyon Aktif" VerticalOptions="Center" />
-                        <Switch Grid.Row="0" Grid.Column="1" IsToggled="{Binding SenkronizasyonAktif}" />
-
-                        <Label Grid.Row="1" Grid.Column="0" Text="Sunucu Adresi:" FontAttributes="Bold" />
                         
-                        <Entry Grid.Row="2" Grid.ColumnSpan="2" 
-                               Text="{Binding SenkronizasyonSunucusu}"
-                               Placeholder="http://sunucu.adres:port" />
+                        <Frame Grid.Column="0"
+                               BackgroundColor="{AppThemeBinding Light=#E3F2FD, Dark=#1E3A8A}"
+                               WidthRequest="50"
+                               HeightRequest="50"
+                               CornerRadius="25"
+                               HasShadow="False"
+                               Margin="0,0,15,0">
+                            <Label Text="🔧" 
+                                   FontSize="24"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                        </Frame>
+                        
+                        <StackLayout Grid.Column="1" VerticalOptions="Center">
+                            <Label Text="Genel Ayarlar" 
+                                   FontSize="20" 
+                                   FontAttributes="Bold" 
+                                   TextColor="{AppThemeBinding Light=#1976D2, Dark=#60A5FA}" />
+                            <Label Text="Temel uygulama ayarları" 
+                                   FontSize="14" 
+                                   TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+                        </StackLayout>
                     </Grid>
+                    
+                    <!-- Modern Toggle Cards -->
+                    <Frame BackgroundColor="{AppThemeBinding Light=#F8F9FA, Dark=#374151}" 
+                           Padding="20" 
+                           CornerRadius="15" 
+                           HasShadow="False">
+                        <Grid ColumnSpacing="15" RowSpacing="20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
 
-                    <Button Text="Bağlantıyı Test Et"
-                            BackgroundColor="Purple"
-                            TextColor="White"
-                            CornerRadius="5"
-                            Command="{Binding SenkronizasyonTestCommand}" />
+                            <!-- Bildirimler -->
+                            <Label Grid.Row="0" Grid.Column="0" Text="🔔" FontSize="20" VerticalOptions="Center" />
+                            <StackLayout Grid.Row="0" Grid.Column="1" VerticalOptions="Center">
+                                <Label Text="Bildirimler" FontAttributes="Bold" FontSize="16" />
+                                <Label Text="Push bildirimleri ve uyarılar" FontSize="12" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+                            </StackLayout>
+                            <Switch Grid.Row="0" Grid.Column="2" IsToggled="{Binding BildirimlerAktif}" />
+
+                            <!-- Güvenli Silme -->
+                            <Label Grid.Row="1" Grid.Column="0" Text="🛡️" FontSize="20" VerticalOptions="Center" />
+                            <StackLayout Grid.Row="1" Grid.Column="1" VerticalOptions="Center">
+                                <Label Text="Güvenli Silme" FontAttributes="Bold" FontSize="16" />
+                                <Label Text="Silme işlemlerinde onay iste" FontSize="12" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+                            </StackLayout>
+                            <Switch Grid.Row="1" Grid.Column="2" IsToggled="{Binding GuvenceliSilme}" />
+
+                            <!-- Karanlık Tema -->
+                            <Label Grid.Row="2" Grid.Column="0" Text="🌙" FontSize="20" VerticalOptions="Center" />
+                            <StackLayout Grid.Row="2" Grid.Column="1" VerticalOptions="Center">
+                                <Label Text="Karanlık Tema" FontAttributes="Bold" FontSize="16" />
+                                <Label Text="Koyu renk temasını kullan" FontSize="12" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+                            </StackLayout>
+                            <Switch Grid.Row="2" Grid.Column="2" IsToggled="{Binding KaranlikTema}" />
+
+                            <!-- Otomatik Yedekleme -->
+                            <Label Grid.Row="3" Grid.Column="0" Text="💾" FontSize="20" VerticalOptions="Center" />
+                            <StackLayout Grid.Row="3" Grid.Column="1" VerticalOptions="Center">
+                                <Label Text="Otomatik Yedekleme" FontAttributes="Bold" FontSize="16" />
+                                <Label Text="Günlük otomatik yedekleme yap" FontSize="12" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+                            </StackLayout>
+                            <Switch Grid.Row="3" Grid.Column="2" IsToggled="{Binding OtomatikYedekleme}" />
+
+                            <!-- Maksimum Dosya Boyutu -->
+                            <Label Grid.Row="4" Grid.Column="0" Text="📏" FontSize="20" VerticalOptions="Center" />
+                            <StackLayout Grid.Row="4" Grid.Column="1" VerticalOptions="Center">
+                                <Label Text="Maksimum Dosya Boyutu" FontAttributes="Bold" FontSize="16" />
+                                <Label Text="Yüklenebilir maksimum dosya boyutu (MB)" FontSize="12" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+                            </StackLayout>
+                            <Frame Grid.Row="4" Grid.Column="2" 
+                                   BackgroundColor="{AppThemeBinding Light=White, Dark=#4B5563}" 
+                                   Padding="10" 
+                                   CornerRadius="10" 
+                                   HasShadow="False">
+                                <Entry Text="{Binding MaksimumDosyaBoyutu}" 
+                                       Keyboard="Numeric" 
+                                       WidthRequest="80"
+                                       BackgroundColor="Transparent"
+                                       TextColor="{AppThemeBinding Light=#1F2937, Dark=#F9FAFB}"
+                                       FontSize="14" />
+                            </Frame>
+                        </Grid>
+                    </Frame>
                 </StackLayout>
             </Frame>
 
-            <!-- OCR Ayarları -->
-            <Frame BackgroundColor="White" Padding="20" CornerRadius="10" HasShadow="True">
-                <StackLayout Spacing="15">
-                    <Label Text="OCR Ayarları" FontSize="18" FontAttributes="Bold" TextColor="Orange" />
-                    
-                    <Grid ColumnSpacing="10" RowSpacing="15">
+            <!-- Yedekleme ve Senkronizasyon -->
+            <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#2D3748}" 
+                   Padding="25" 
+                   CornerRadius="20" 
+                   HasShadow="True">
+                <StackLayout Spacing="20">
+                    <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-
-                        <Label Grid.Row="0" Grid.Column="0" Text="Otomatik OCR" VerticalOptions="Center" />
-                        <Switch Grid.Row="0" Grid.Column="1" IsToggled="{Binding OcrOtomatikAktif}" />
-
-                        <Label Grid.Row="1" Grid.Column="0" Text="OCR Dili:" VerticalOptions="Center" />
-                        <Picker Grid.Row="1" Grid.Column="1" 
-                                SelectedItem="{Binding OcrDili}"
-                                WidthRequest="150">
-                            <Picker.ItemsSource>
-                                <x:Array Type="{x:Type x:String}">
-                                    <x:String>tr-TR</x:String>
-                                    <x:String>en-US</x:String>
-                                    <x:String>de-DE</x:String>
-                                    <x:String>fr-FR</x:String>
-                                </x:Array>
-                            </Picker.ItemsSource>
-                        </Picker>
+                        
+                        <Frame Grid.Column="0"
+                               BackgroundColor="{AppThemeBinding Light=#E8F5E8, Dark=#1B5E20}"
+                               WidthRequest="50"
+                               HeightRequest="50"
+                               CornerRadius="25"
+                               HasShadow="False"
+                               Margin="0,0,15,0">
+                            <Label Text="☁️" 
+                                   FontSize="24"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                        </Frame>
+                        
+                        <StackLayout Grid.Column="1" VerticalOptions="Center">
+                            <Label Text="Yedekleme ve Senkronizasyon" 
+                                   FontSize="20" 
+                                   FontAttributes="Bold" 
+                                   TextColor="{AppThemeBinding Light=#2E7D32, Dark=#4CAF50}" />
+                            <Label Text="Verilerinizi güvende tutun" 
+                                   FontSize="14" 
+                                   TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+                        </StackLayout>
                     </Grid>
+                    
+                    <Frame BackgroundColor="{AppThemeBinding Light=#F8F9FA, Dark=#374151}" 
+                           Padding="20" 
+                           CornerRadius="15" 
+                           HasShadow="False">
+                        <StackLayout Spacing="20">
+                            <!-- Yedekleme Konumu -->
+                            <Grid ColumnSpacing="15">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                
+                                <Label Grid.Column="0" Text="📁" FontSize="20" VerticalOptions="Center" />
+                                <StackLayout Grid.Column="1" VerticalOptions="Center">
+                                    <Label Text="Yedekleme Konumu" FontAttributes="Bold" FontSize="16" />
+                                    <Label Text="{Binding YedeklemeKonumu}" 
+                                           FontSize="12" 
+                                           TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}"
+                                           LineBreakMode="TailTruncation" />
+                                </StackLayout>
+                                <Button Grid.Column="2" 
+                                        Text="📂 Seç" 
+                                        BackgroundColor="{AppThemeBinding Light=#2E7D32, Dark=#4CAF50}"
+                                        TextColor="White"
+                                        CornerRadius="10"
+                                        FontSize="12"
+                                        Command="{Binding YedeklemeKonumuSecCommand}" />
+                            </Grid>
 
-                    <Label Text="OCR özelliği belgelerinizdeki metinleri otomatik olarak tarayarak aranabilir hale getirir." 
-                           FontSize="12" TextColor="Gray" LineBreakMode="WordWrap" />
+                            <!-- Senkronizasyon -->
+                            <Grid ColumnSpacing="15" RowSpacing="15">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                
+                                <Label Grid.Row="0" Grid.Column="0" Text="🔄" FontSize="20" VerticalOptions="Center" />
+                                <StackLayout Grid.Row="0" Grid.Column="1" VerticalOptions="Center">
+                                    <Label Text="Senkronizasyon" FontAttributes="Bold" FontSize="16" />
+                                    <Label Text="Cihazlar arası senkronizasyon" FontSize="12" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+                                </StackLayout>
+                                <Switch Grid.Row="0" Grid.Column="2" IsToggled="{Binding SenkronizasyonAktif}" />
+                                
+                                <Entry Grid.Row="1" Grid.ColumnSpan="3"
+                                       Text="{Binding SenkronizasyonSunucusu}"
+                                       Placeholder="Sunucu adresi: http://sunucu.adres:port"
+                                       BackgroundColor="{AppThemeBinding Light=White, Dark=#4B5563}"
+                                       TextColor="{AppThemeBinding Light=#1F2937, Dark=#F9FAFB}"
+                                       FontSize="14" />
+                            </Grid>
+
+                            <!-- Aksiyon Butonları -->
+                            <Grid ColumnSpacing="15">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                
+                                <Button Grid.Column="0"
+                                        Text="💾 Yedekle"
+                                        BackgroundColor="{AppThemeBinding Light=#2E7D32, Dark=#4CAF50}"
+                                        TextColor="White"
+                                        CornerRadius="10"
+                                        FontSize="14"
+                                        FontAttributes="Bold"
+                                        Command="{Binding YedeklemeBaslatCommand}" />
+                                
+                                <Button Grid.Column="1"
+                                        Text="🔗 Test Et"
+                                        BackgroundColor="{AppThemeBinding Light=#7C3AED, Dark=#8B5CF6}"
+                                        TextColor="White"
+                                        CornerRadius="10"
+                                        FontSize="14"
+                                        FontAttributes="Bold"
+                                        Command="{Binding SenkronizasyonTestCommand}" />
+                            </Grid>
+                        </StackLayout>
+                    </Frame>
+                </StackLayout>
+            </Frame>
+
+            <!-- OCR ve Gelişmiş Özellikler -->
+            <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#2D3748}" 
+                   Padding="25" 
+                   CornerRadius="20" 
+                   HasShadow="True">
+                <StackLayout Spacing="20">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Frame Grid.Column="0"
+                               BackgroundColor="{AppThemeBinding Light=#FFF3E0, Dark=#E65100}"
+                               WidthRequest="50"
+                               HeightRequest="50"
+                               CornerRadius="25"
+                               HasShadow="False"
+                               Margin="0,0,15,0">
+                            <Label Text="🔍" 
+                                   FontSize="24"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                        </Frame>
+                        
+                        <StackLayout Grid.Column="1" VerticalOptions="Center">
+                            <Label Text="OCR ve Gelişmiş Özellikler" 
+                                   FontSize="20" 
+                                   FontAttributes="Bold" 
+                                   TextColor="{AppThemeBinding Light=#F57C00, Dark=#FF9800}" />
+                            <Label Text="Metin tanıma ve akıllı özellikler" 
+                                   FontSize="14" 
+                                   TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+                        </StackLayout>
+                    </Grid>
+                    
+                    <Frame BackgroundColor="{AppThemeBinding Light=#F8F9FA, Dark=#374151}" 
+                           Padding="20" 
+                           CornerRadius="15" 
+                           HasShadow="False">
+                        <Grid ColumnSpacing="15" RowSpacing="20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <!-- OCR Aktif -->
+                            <Label Grid.Row="0" Grid.Column="0" Text="📝" FontSize="20" VerticalOptions="Center" />
+                            <StackLayout Grid.Row="0" Grid.Column="1" VerticalOptions="Center">
+                                <Label Text="Otomatik OCR" FontAttributes="Bold" FontSize="16" />
+                                <Label Text="Belgelerden metin çıkarma" FontSize="12" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+                            </StackLayout>
+                            <Switch Grid.Row="0" Grid.Column="2" IsToggled="{Binding OcrOtomatikAktif}" />
+
+                            <!-- OCR Dili -->
+                            <Label Grid.Row="1" Grid.Column="0" Text="🌐" FontSize="20" VerticalOptions="Center" />
+                            <StackLayout Grid.Row="1" Grid.Column="1" VerticalOptions="Center">
+                                <Label Text="OCR Dili" FontAttributes="Bold" FontSize="16" />
+                                <Label Text="Metin tanıma dili seçimi" FontSize="12" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+                            </StackLayout>
+                            <Frame Grid.Row="1" Grid.Column="2" 
+                                   BackgroundColor="{AppThemeBinding Light=White, Dark=#4B5563}" 
+                                   Padding="10" 
+                                   CornerRadius="10" 
+                                   HasShadow="False">
+                                <Picker SelectedItem="{Binding OcrDili}"
+                                        BackgroundColor="Transparent"
+                                        TextColor="{AppThemeBinding Light=#1F2937, Dark=#F9FAFB}"
+                                        FontSize="14"
+                                        WidthRequest="100">
+                                    <Picker.ItemsSource>
+                                        <x:Array Type="{x:Type x:String}">
+                                            <x:String>tr-TR</x:String>
+                                            <x:String>en-US</x:String>
+                                            <x:String>de-DE</x:String>
+                                            <x:String>fr-FR</x:String>
+                                        </x:Array>
+                                    </Picker.ItemsSource>
+                                </Picker>
+                            </Frame>
+                        </Grid>
+                    </Frame>
                 </StackLayout>
             </Frame>
 
             <!-- Sistem Bilgileri -->
-            <Frame BackgroundColor="LightGray" Padding="20" CornerRadius="10" HasShadow="True">
-                <StackLayout Spacing="15">
-                    <Label Text="Sistem Bilgileri" FontSize="18" FontAttributes="Bold" TextColor="DarkGray" />
-                    
-                    <Grid ColumnSpacing="20" RowSpacing="10">
+            <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#2D3748}" 
+                   Padding="25" 
+                   CornerRadius="20" 
+                   HasShadow="True">
+                <StackLayout Spacing="20">
+                    <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-
-                        <Label Grid.Row="0" Grid.Column="0" Text="Uygulama Versiyonu:" FontAttributes="Bold" />
-                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding UygulamaVersionu}" />
-
-                        <Label Grid.Row="1" Grid.Column="0" Text="Database Versiyonu:" FontAttributes="Bold" />
-                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding DatabaseVersionu}" />
+                        
+                        <Frame Grid.Column="0"
+                               BackgroundColor="{AppThemeBinding Light=#F3E5F5, Dark=#4A148C}"
+                               WidthRequest="50"
+                               HeightRequest="50"
+                               CornerRadius="25"
+                               HasShadow="False"
+                               Margin="0,0,15,0">
+                            <Label Text="ℹ️" 
+                                   FontSize="24"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                        </Frame>
+                        
+                        <StackLayout Grid.Column="1" VerticalOptions="Center">
+                            <Label Text="Sistem Bilgileri" 
+                                   FontSize="20" 
+                                   FontAttributes="Bold" 
+                                   TextColor="{AppThemeBinding Light=#7B1FA2, Dark=#BA68C8}" />
+                            <Label Text="Uygulama ve sistem detayları" 
+                                   FontSize="14" 
+                                   TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+                        </StackLayout>
                     </Grid>
+                    
+                    <Frame BackgroundColor="{AppThemeBinding Light=#F8F9FA, Dark=#374151}" 
+                           Padding="20" 
+                           CornerRadius="15" 
+                           HasShadow="False">
+                        <Grid ColumnSpacing="20" RowSpacing="15">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <StackLayout Grid.Row="0" Grid.Column="0">
+                                <Label Text="📱 Uygulama Versiyonu" FontAttributes="Bold" FontSize="14" />
+                                <Label Text="{Binding UygulamaVersionu}" FontSize="16" TextColor="{AppThemeBinding Light=#1976D2, Dark=#60A5FA}" />
+                            </StackLayout>
+                            
+                            <StackLayout Grid.Row="0" Grid.Column="1">
+                                <Label Text="🗄️ Database Versiyonu" FontAttributes="Bold" FontSize="14" />
+                                <Label Text="{Binding DatabaseVersionu}" FontSize="16" TextColor="{AppThemeBinding Light=#1976D2, Dark=#60A5FA}" />
+                            </StackLayout>
+                            
+                            <StackLayout Grid.Row="1" Grid.ColumnSpan="2">
+                                <Label Text="🕐 Son Yedekleme" FontAttributes="Bold" FontSize="14" />
+                                <Label Text="{Binding SonYedeklemeTarihi}" FontSize="16" TextColor="{AppThemeBinding Light=#1976D2, Dark=#60A5FA}" />
+                            </StackLayout>
+                            
+                            <Button Grid.Row="2" Grid.ColumnSpan="2"
+                                    Text="ℹ️ Hakkında"
+                                    BackgroundColor="{AppThemeBinding Light=#7B1FA2, Dark=#BA68C8}"
+                                    TextColor="White"
+                                    CornerRadius="10"
+                                    FontSize="14"
+                                    FontAttributes="Bold"
+                                    Command="{Binding HakkindaCommand}" />
+                        </Grid>
+                    </Frame>
                 </StackLayout>
             </Frame>
 
             <!-- Tehlikeli İşlemler -->
-            <Frame BackgroundColor="LightCoral" Padding="20" CornerRadius="10" HasShadow="True">
-                <StackLayout Spacing="15">
-                    <Label Text="Tehlikeli İşlemler" FontSize="18" FontAttributes="Bold" TextColor="DarkRed" />
+            <Frame BackgroundColor="{AppThemeBinding Light=#FFEBEE, Dark=#B71C1C}" 
+                   Padding="25" 
+                   CornerRadius="20" 
+                   HasShadow="True">
+                <StackLayout Spacing="20">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Frame Grid.Column="0"
+                               BackgroundColor="{AppThemeBinding Light=#FFCDD2, Dark=#D32F2F}"
+                               WidthRequest="50"
+                               HeightRequest="50"
+                               CornerRadius="25"
+                               HasShadow="False"
+                               Margin="0,0,15,0">
+                            <Label Text="⚠️" 
+                                   FontSize="24"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                        </Frame>
+                        
+                        <StackLayout Grid.Column="1" VerticalOptions="Center">
+                            <Label Text="Tehlikeli İşlemler" 
+                                   FontSize="20" 
+                                   FontAttributes="Bold" 
+                                   TextColor="{AppThemeBinding Light=#C62828, Dark=#FF5252}" />
+                            <Label Text="Bu işlemler geri alınamaz!" 
+                                   FontSize="14" 
+                                   TextColor="{AppThemeBinding Light=#C62828, Dark=#FF5252}"
+                                   FontAttributes="Italic" />
+                        </StackLayout>
+                    </Grid>
                     
-                    <Label Text="Bu işlemler geri alınamaz. Dikkatli kullanın!" 
-                           FontSize="14" FontAttributes="Italic" TextColor="DarkRed" />
-
-                    <Button Text="Veritabanını Temizle"
-                            BackgroundColor="Red"
+                    <Button Text="🗑️ Veritabanını Temizle"
+                            BackgroundColor="{AppThemeBinding Light=#D32F2F, Dark=#F44336}"
                             TextColor="White"
-                            CornerRadius="5"
+                            CornerRadius="10"
+                            FontSize="16"
+                            FontAttributes="Bold"
                             Command="{Binding VeritabaniTemizleCommand}" />
-                </StackLayout>
-            </Frame>
-
-            <!-- Hakkında -->
-            <Frame BackgroundColor="LightBlue" Padding="20" CornerRadius="10" HasShadow="True">
-                <StackLayout Spacing="15">
-                    <Button Text="Hakkında"
-                            BackgroundColor="Blue"
-                            TextColor="White"
-                            CornerRadius="5"
-                            Command="{Binding HakkindaCommand}" />
                 </StackLayout>
             </Frame>
 
             <!-- Loading Indicator -->
             <ActivityIndicator IsVisible="{Binding IsBusy}"
                               IsRunning="{Binding IsBusy}"
-                              Color="Blue"
+                              Color="{AppThemeBinding Light=#667EEA, Dark=#60A5FA}"
                               VerticalOptions="Center"
                               HorizontalOptions="Center" />
 

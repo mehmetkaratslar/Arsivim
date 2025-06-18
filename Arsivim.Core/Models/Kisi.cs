@@ -28,6 +28,18 @@ namespace Arsivim.Core.Models
         public string Soyad { get; set; } = string.Empty;
 
         /// <summary>
+        /// Kişinin unvanı
+        /// </summary>
+        [StringLength(100)]
+        public string? Unvan { get; set; }
+
+        /// <summary>
+        /// Çalıştığı şirket
+        /// </summary>
+        [StringLength(100)]
+        public string? Sirket { get; set; }
+
+        /// <summary>
         /// Kişinin doğum tarihi
         /// </summary>
         public DateTime? DogumTarihi { get; set; }
@@ -58,12 +70,33 @@ namespace Arsivim.Core.Models
         public string? Adres { get; set; }
 
         /// <summary>
+        /// Kişi hakkında notlar
+        /// </summary>
+        [StringLength(1000)]
+        public string? Notlar { get; set; }
+
+        /// <summary>
+        /// Kişinin aktif durumu
+        /// </summary>
+        public bool Aktif { get; set; } = true;
+
+        /// <summary>
         /// Kayıt oluşturulma tarihi
+        /// </summary>
+        public DateTime OlusturmaTarihi { get; set; } = DateTime.Now;
+
+        /// <summary>
+        /// Kayıt oluşturulma tarihi (Backward compatibility)
         /// </summary>
         public DateTime KayitTarihi { get; set; } = DateTime.Now;
 
         /// <summary>
         /// Son güncelleme tarihi
+        /// </summary>
+        public DateTime GuncellenmeTarihi { get; set; } = DateTime.Now;
+
+        /// <summary>
+        /// Son güncelleme tarihi (Backward compatibility)
         /// </summary>
         public DateTime SonGuncelleme { get; set; } = DateTime.Now;
 

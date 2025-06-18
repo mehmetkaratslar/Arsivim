@@ -28,10 +28,12 @@ namespace Arsivim.ViewModels
             YenileCommand = new Command(async () => await YenileAsync());
             BelgeEkleCommand = new Command(async () => await BelgeEkleAsync());
             BelgeAcCommand = new Command<Belge>(async (belge) => await BelgeAcAsync(belge));
-            EtiketlerCommand = new Command(async () => await NavigateToAsync("//EtiketYonetimi"));
-            IstatistiklerCommand = new Command(async () => await NavigateToAsync("//Istatistikler"));
-            GecmisCommand = new Command(async () => await NavigateToAsync("//Gecmis"));
-            KullanicilarCommand = new Command(async () => await NavigateToAsync("//KullaniciYonetimi"));
+            EtiketlerCommand = new Command(async () => await NavigateToAsync("///EtiketYonetimi"));
+            IstatistiklerCommand = new Command(async () => await NavigateToAsync("///Istatistikler"));
+            GecmisCommand = new Command(async () => await NavigateToAsync("///Gecmis"));
+            KullanicilarCommand = new Command(async () => await NavigateToAsync("///KullaniciYonetimi"));
+            BelgelerCommand = new Command(async () => await NavigateToAsync("///Belgeler"));
+            NavigateToCommand = new Command<string>(async (route) => await NavigateToAsync(route));
 
             _ = Task.Run(InitializeAsync);
         }
@@ -70,6 +72,8 @@ namespace Arsivim.ViewModels
         public ICommand IstatistiklerCommand { get; }
         public ICommand GecmisCommand { get; }
         public ICommand KullanicilarCommand { get; }
+        public ICommand BelgelerCommand { get; }
+        public ICommand NavigateToCommand { get; }
 
         #endregion
 
@@ -130,18 +134,30 @@ namespace Arsivim.ViewModels
 
         private async Task BelgeEkleAsync()
         {
-            // Belge ekleme sayfasına yönlendirme
-            // Shell navigation ile implement edilecek
-            await Task.CompletedTask;
+            try
+            {
+                await Shell.Current.GoToAsync("///BelgeEkle");
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlert("Hata", 
+                    $"Belge ekleme sayfasına gidilemedi: {ex.Message}", "Tamam");
+            }
         }
 
         private async Task BelgeAcAsync(Belge belge)
         {
             if (belge == null) return;
             
-            // Belge detay sayfasına yönlendirme
-            // Shell navigation ile implement edilecek
-            await Task.CompletedTask;
+            try
+            {
+                await Shell.Current.GoToAsync($"///BelgeDetay?belgeId={belge.BelgeID}");
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlert("Hata", 
+                    $"Belge detayına gidilemedi: {ex.Message}", "Tamam");
+            }
         }
 
         private async Task NavigateToAsync(string route)

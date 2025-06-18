@@ -14,9 +14,7 @@
         <ToolbarItem Text="Sil" 
                      IconImageSource="delete.png" 
                      Command="{Binding BelgeSilCommand}" />
-        <ToolbarItem Text="Paylaş" 
-                     IconImageSource="share.png" 
-                     Command="{Binding BelgePaylas}" />
+
     </ContentPage.ToolbarItems>
 
     <ScrollView>
@@ -95,24 +93,41 @@
                     </StackLayout>
 
                     <!-- Aksiyon Butonları -->
-                    <Grid ColumnSpacing="10">
+                    <Grid ColumnSpacing="10" RowSpacing="10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
                         <Button Grid.Column="0"
-                                Text="İndir"
-                                BackgroundColor="Green"
+                                Text="👁️ Aç"
+                                BackgroundColor="#FF6B35"
                                 TextColor="White"
-                                CornerRadius="5"
-                                Command="{Binding BelgeIndir}" />
+                                CornerRadius="10"
+                                FontSize="14"
+                                FontAttributes="Bold"
+                                Command="{Binding BelgeAcCommand}" />
 
                         <Button Grid.Column="1"
-                                Text="Paylaş"
+                                Text="⬇️ İndir"
+                                BackgroundColor="Green"
+                                TextColor="White"
+                                CornerRadius="10"
+                                FontSize="14"
+                                FontAttributes="Bold"
+                                Command="{Binding BelgeIndir}" />
+
+                        <Button Grid.Column="2"
+                                Text="📤 Paylaş"
                                 BackgroundColor="Blue"
                                 TextColor="White"
-                                CornerRadius="5"
+                                CornerRadius="10"
+                                FontSize="14"
+                                FontAttributes="Bold"
                                 Command="{Binding BelgePaylas}" />
                     </Grid>
                 </StackLayout>

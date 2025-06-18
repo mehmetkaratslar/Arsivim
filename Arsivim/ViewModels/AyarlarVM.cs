@@ -15,6 +15,8 @@ namespace Arsivim.ViewModels
         private string _ocrDili = "tr-TR";
         private bool _bildirimlerAktif = true;
         private bool _guvenceliSilme = true;
+        private bool _karanlikTema = false;
+        private string _sonYedeklemeTarihi = "Henüz yedekleme yapılmadı";
 
         public AyarlarVM()
         {
@@ -88,9 +90,26 @@ namespace Arsivim.ViewModels
             set => SetProperty(ref _guvenceliSilme, value);
         }
 
+        public bool KaranlikTema
+        {
+            get => _karanlikTema;
+            set 
+            { 
+                if (SetProperty(ref _karanlikTema, value))
+                {
+                    // Tema değişikliğini uygula
+                    Application.Current.UserAppTheme = value ? AppTheme.Dark : AppTheme.Light;
+                }
+            }
+        }
+
         public string UygulamaVersionu => "1.0.0";
         public string DatabaseVersionu => "1.0";
-        public string SonYedeklemeTarihi => "Henüz yedekleme yapılmadı";
+        public string SonYedeklemeTarihi 
+        {
+            get => _sonYedeklemeTarihi;
+            set => SetProperty(ref _sonYedeklemeTarihi, value);
+        }
 
         #endregion
 
@@ -110,7 +129,31 @@ namespace Arsivim.ViewModels
 
         private async Task AyarlariYukleAsync()
         {
-            // Ayarları veritabanından yükle - şu anda örnek değerler
+            try
+            {
+                // Ayarları Preferences'tan yükle
+                BildirimlerAktif = Preferences.Get("BildirimlerAktif", true);
+                GuvenceliSilme = Preferences.Get("GuvenceliSilme", true);
+                KaranlikTema = Preferences.Get("KaranlikTema", false);
+                OtomatikYedekleme = Preferences.Get("OtomatikYedekleme", true);
+                SenkronizasyonAktif = Preferences.Get("SenkronizasyonAktif", false);
+                YedeklemeKonumu = Preferences.Get("YedeklemeKonumu", string.Empty);
+                SenkronizasyonSunucusu = Preferences.Get("SenkronizasyonSunucusu", string.Empty);
+                MaksimumDosyaBoyutu = Preferences.Get("MaksimumDosyaBoyutu", 50);
+                OcrOtomatikAktif = Preferences.Get("OcrOtomatikAktif", false);
+                OcrDili = Preferences.Get("OcrDili", "tr-TR");
+                SonYedeklemeTarihi = Preferences.Get("SonYedeklemeTarihi", "Henüz yedekleme yapılmadı");
+
+                // Tema ayarını uygula
+                Application.Current.UserAppTheme = KaranlikTema ? AppTheme.Dark : AppTheme.Light;
+            }
+            catch (Exception ex)
+            {
+                // Hata durumunda varsayılan değerleri kullan
+                await Application.Current.MainPage.DisplayAlert("Uyarı", 
+                    $"Ayarlar yüklenirken hata oluştu, varsayılan değerler kullanılıyor: {ex.Message}", "Tamam");
+            }
+
             await Task.CompletedTask;
         }
 
@@ -118,12 +161,38 @@ namespace Arsivim.ViewModels
         {
             try
             {
-                // Dosya seçici implementasyonu gerekli
-                await Application.Current.MainPage.DisplayAlert("Bilgi", "Dosya seçici özelliği henüz geliştirilmedi.", "Tamam");
+                // Manuel yol girişi - MAUI'de klasör seçici sınırlı
+                var manuelYol = await Application.Current.MainPage.DisplayPromptAsync(
+                    "Yedekleme Konumu", 
+                    "Yedekleme klasörü yolunu girin:", 
+                    "Tamam", 
+                    "İptal", 
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Arsivim", "Backup"),
+                    keyboard: Keyboard.Default);
+
+                if (!string.IsNullOrWhiteSpace(manuelYol))
+                {
+                    try
+                    {
+                        if (Directory.Exists(manuelYol) || Directory.CreateDirectory(manuelYol).Exists)
+                        {
+                            YedeklemeKonumu = manuelYol;
+                            await Application.Current.MainPage.DisplayAlert("Başarılı", "Yedekleme konumu ayarlandı.", "Tamam");
+                        }
+                        else
+                        {
+                            await Application.Current.MainPage.DisplayAlert("Hata", "Geçersiz klasör yolu.", "Tamam");
+                        }
+                    }
+                    catch
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Hata", "Klasör oluşturulamadı.", "Tamam");
+                    }
+                }
             }
             catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert("Hata", $"Konum seçilirken hata oluştu: {ex.Message}", "Tamam");
+                await Application.Current.MainPage.DisplayAlert("Hata", $"Yol seçilirken hata oluştu: {ex.Message}", "Tamam");
             }
         }
 
@@ -131,10 +200,49 @@ namespace Arsivim.ViewModels
         {
             await ExecuteAsync(async () =>
             {
-                // Yedekleme işlemi implementasyonu
-                await Task.Delay(2000); // Simüle edilen yedekleme işlemi
-                
-                await Application.Current.MainPage.DisplayAlert("Başarılı", "Yedekleme işlemi tamamlandı.", "Tamam");
+                try
+                {
+                    // Yedekleme konumu kontrolü
+                    var yedeklemeKlasoru = string.IsNullOrWhiteSpace(YedeklemeKonumu) 
+                        ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Arsivim", "Backup")
+                        : YedeklemeKonumu;
+
+                    // Klasörü oluştur
+                    Directory.CreateDirectory(yedeklemeKlasoru);
+
+                    // Yedekleme dosya adı (tarih ile)
+                    var tarih = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+                    var yedeklemeDosyasi = Path.Combine(yedeklemeKlasoru, $"Arsivim_Backup_{tarih}.zip");
+
+                    // Veritabanı dosyasını bul ve kopyala
+                    var appDataPath = FileSystem.AppDataDirectory;
+                    var dbPath = Path.Combine(appDataPath, "arsivim.db");
+
+                    if (File.Exists(dbPath))
+                    {
+                        // Basit yedekleme - sadece veritabanı dosyasını kopyala
+                        var backupDbPath = Path.Combine(yedeklemeKlasoru, $"arsivim_backup_{tarih}.db");
+                        File.Copy(dbPath, backupDbPath, true);
+
+                        // Son yedekleme tarihini güncelle
+                        _sonYedeklemeTarihi = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
+                        OnPropertyChanged(nameof(SonYedeklemeTarihi));
+
+                        // Bildirim gönder
+                        await BildirimGonderAsync("Yedekleme işlemi başarıyla tamamlandı!");
+
+                        await Application.Current.MainPage.DisplayAlert("Başarılı", 
+                            $"Yedekleme tamamlandı!\n\nKonum: {backupDbPath}\nTarih: {_sonYedeklemeTarihi}", "Tamam");
+                    }
+                    else
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Uyarı", "Yedeklenecek veritabanı dosyası bulunamadı.", "Tamam");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Hata", $"Yedekleme sırasında hata oluştu: {ex.Message}", "Tamam");
+                }
             });
         }
 
@@ -156,9 +264,36 @@ namespace Arsivim.ViewModels
                 {
                     await ExecuteAsync(async () =>
                     {
-                        // Veritabanı temizleme işlemi
-                        await Task.Delay(1000);
-                        await Application.Current.MainPage.DisplayAlert("Başarılı", "Veritabanı temizlendi.", "Tamam");
+                        try
+                        {
+                            // Veritabanı dosyasını bul ve sil
+                            var appDataPath = FileSystem.AppDataDirectory;
+                            var dbPath = Path.Combine(appDataPath, "arsivim.db");
+
+                            if (File.Exists(dbPath))
+                            {
+                                File.Delete(dbPath);
+                                
+                                // Ayarları da sıfırla
+                                await VarsayilanAyarlariYukleAsync();
+                                
+                                await Application.Current.MainPage.DisplayAlert("Başarılı", 
+                                    "Veritabanı başarıyla temizlendi.\nUygulama yeniden başlatılacak.", "Tamam");
+                                
+                                // Uygulamayı yeniden başlat
+                                System.Diagnostics.Process.Start(Environment.ProcessPath);
+                                Application.Current.Quit();
+                            }
+                            else
+                            {
+                                await Application.Current.MainPage.DisplayAlert("Bilgi", "Temizlenecek veritabanı bulunamadı.", "Tamam");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            await Application.Current.MainPage.DisplayAlert("Hata", 
+                                $"Veritabanı temizlenirken hata oluştu: {ex.Message}", "Tamam");
+                        }
                     });
                 }
             }
@@ -174,10 +309,48 @@ namespace Arsivim.ViewModels
 
             await ExecuteAsync(async () =>
             {
-                // Senkronizasyon test işlemi
-                await Task.Delay(3000); // Simüle edilen test işlemi
-                
-                await Application.Current.MainPage.DisplayAlert("Test Sonucu", "Senkronizasyon sunucusuna bağlantı başarılı.", "Tamam");
+                try
+                {
+                    // HTTP bağlantı testi
+                    using var httpClient = new HttpClient();
+                    httpClient.Timeout = TimeSpan.FromSeconds(10);
+                    
+                    // URL formatını kontrol et
+                    if (!Uri.TryCreate(SenkronizasyonSunucusu, UriKind.Absolute, out var uri))
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Hata", "Geçersiz sunucu adresi formatı.", "Tamam");
+                        return;
+                    }
+
+                    // Ping testi
+                    var response = await httpClient.GetAsync(uri);
+                    
+                    if (response.IsSuccessStatusCode)
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Test Sonucu", 
+                            $"✅ Bağlantı başarılı!\n\nSunucu: {SenkronizasyonSunucusu}\nDurum: {response.StatusCode}\nSüre: {DateTime.Now:HH:mm:ss}", "Tamam");
+                    }
+                    else
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Test Sonucu", 
+                            $"⚠️ Sunucu yanıt verdi ama hata döndü.\n\nDurum: {response.StatusCode}\nMesaj: {response.ReasonPhrase}", "Tamam");
+                    }
+                }
+                catch (TaskCanceledException)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Test Sonucu", 
+                        "❌ Bağlantı zaman aşımına uğradı.\nSunucu adresini kontrol edin.", "Tamam");
+                }
+                catch (HttpRequestException ex)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Test Sonucu", 
+                        $"❌ Bağlantı hatası:\n{ex.Message}", "Tamam");
+                }
+                catch (Exception ex)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Test Sonucu", 
+                        $"❌ Beklenmeyen hata:\n{ex.Message}", "Tamam");
+                }
             });
         }
 
@@ -197,11 +370,29 @@ namespace Arsivim.ViewModels
         {
             await ExecuteAsync(async () =>
             {
-                // Ayarları kaydetme işlemi - şu anda sadece simüle ediliyor
-                // Gerçek implementasyonda ayarlar veritabanına kaydedilecek
-                await Task.Delay(500);
+                try
+                {
+                    // Ayarları Preferences ile kaydet
+                    Preferences.Set("BildirimlerAktif", BildirimlerAktif);
+                    Preferences.Set("GuvenceliSilme", GuvenceliSilme);
+                    Preferences.Set("KaranlikTema", KaranlikTema);
+                    Preferences.Set("OtomatikYedekleme", OtomatikYedekleme);
+                    Preferences.Set("SenkronizasyonAktif", SenkronizasyonAktif);
+                    Preferences.Set("YedeklemeKonumu", YedeklemeKonumu);
+                    Preferences.Set("SenkronizasyonSunucusu", SenkronizasyonSunucusu);
+                    Preferences.Set("MaksimumDosyaBoyutu", MaksimumDosyaBoyutu);
+                    Preferences.Set("OcrOtomatikAktif", OcrOtomatikAktif);
+                    Preferences.Set("OcrDili", OcrDili);
+                    Preferences.Set("SonYedeklemeTarihi", SonYedeklemeTarihi);
 
-                await Application.Current.MainPage.DisplayAlert("Başarılı", "Ayarlar başarıyla kaydedildi.", "Tamam");
+                    await Application.Current.MainPage.DisplayAlert("Başarılı", 
+                        "Ayarlar başarıyla kaydedildi ve uygulandı!", "Tamam");
+                }
+                catch (Exception ex)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Hata", 
+                        $"Ayarlar kaydedilirken hata oluştu: {ex.Message}", "Tamam");
+                }
             });
         }
 
@@ -214,6 +405,7 @@ namespace Arsivim.ViewModels
 
             if (result)
             {
+                // Varsayılan değerleri ata
                 OtomatikYedekleme = true;
                 SenkronizasyonAktif = false;
                 YedeklemeKonumu = string.Empty;
@@ -223,8 +415,38 @@ namespace Arsivim.ViewModels
                 OcrDili = "tr-TR";
                 BildirimlerAktif = true;
                 GuvenceliSilme = true;
+                KaranlikTema = false;
+                SonYedeklemeTarihi = "Henüz yedekleme yapılmadı";
 
-                await Application.Current.MainPage.DisplayAlert("Başarılı", "Varsayılan ayarlar yüklendi.", "Tamam");
+                // Preferences'ı temizle
+                Preferences.Clear();
+
+                // Tema ayarını uygula
+                Application.Current.UserAppTheme = AppTheme.Light;
+
+                await Application.Current.MainPage.DisplayAlert("Başarılı", 
+                    "Varsayılan ayarlar yüklendi ve uygulandı!", "Tamam");
+            }
+        }
+
+        private async Task BildirimGonderAsync(string mesaj)
+        {
+            try
+            {
+                // Bildirim ayarı kontrol et
+                var bildirimAktif = Preferences.Get("BildirimlerAktif", true);
+                if (!bildirimAktif)
+                    return;
+
+                // Basit bildirim simülasyonu
+                await Task.Delay(100);
+                System.Diagnostics.Debug.WriteLine($"📱 Bildirim: {mesaj}");
+                
+                // Gerçek implementasyonda BildirimServisi kullanılabilir
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Bildirim gönderilirken hata: {ex.Message}");
             }
         }
 

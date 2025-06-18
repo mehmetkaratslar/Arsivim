@@ -28,6 +28,10 @@ namespace Arsivim.ViewModels
             TumGecmisiSilCommand = new Command(async () => await TumGecmisiSilAsync());
             FiltreUygulaCommand = new Command(async () => await FiltreleAsync());
             FiltreSifirlaCommand = new Command(async () => await TemizleAsync());
+            FiltreToggleCommand = new Command(async () => await FiltreToggleAsync());
+            TumGecmisiSilCommand = new Command(async () => await TumGecmisiSilAsync());
+            FiltreUygulaCommand = new Command(async () => await FiltreleAsync());
+            FiltreSifirlaCommand = new Command(async () => await TemizleAsync());
 
             _ = Task.Run(InitializeAsync);
         }
@@ -89,12 +93,8 @@ namespace Arsivim.ViewModels
             set => SetProperty(ref _seciliIslemTuru, value);
         }
 
-        // Metin alias for AramaMetni
-        public string Metin
-        {
-            get => AramaMetni;
-            set => AramaMetni = value;
-        }
+        // Metin property for empty message
+        public string Metin => GecmisYok ? "Henüz işlem geçmişi bulunmuyor." : string.Empty;
 
         #endregion
 
@@ -178,8 +178,39 @@ namespace Arsivim.ViewModels
         {
             await ExecuteAsync(async () =>
             {
-                // Arama işlemi simülasyonu
-                await Task.Delay(100);
+                if (string.IsNullOrWhiteSpace(AramaMetni))
+                {
+                    await YenileAsync();
+                    return;
+                }
+
+                var tumIslemler = new[]
+                {
+                    new Gecmis { ID = 1, IslemTuru = "Belge Ekleme", Aciklama = "Yeni belge eklendi: Fatura_2024.pdf", Zaman = DateTime.Now.AddHours(-2), Kullanici = "admin" },
+                    new Gecmis { ID = 2, IslemTuru = "Belge Silme", Aciklama = "Belge silindi: Eski_Dosya.doc", Zaman = DateTime.Now.AddHours(-5), Kullanici = "admin" },
+                    new Gecmis { ID = 3, IslemTuru = "Kişi Ekleme", Aciklama = "Yeni kişi eklendi: Mehmet Yılmaz", Zaman = DateTime.Now.AddDays(-1), Kullanici = "admin" },
+                    new Gecmis { ID = 4, IslemTuru = "Etiket Oluşturma", Aciklama = "Yeni etiket oluşturuldu: Acil", Zaman = DateTime.Now.AddDays(-2), Kullanici = "admin" },
+                    new Gecmis { ID = 5, IslemTuru = "Sistem Girişi", Aciklama = "Kullanıcı sisteme giriş yaptı", Zaman = DateTime.Now.AddDays(-3), Kullanici = "admin" },
+                    new Gecmis { ID = 6, IslemTuru = "Belge Güncelleme", Aciklama = "Belge güncellendi: Sözleşme.pdf", Zaman = DateTime.Now.AddDays(-4), Kullanici = "mehmet.yilmaz" },
+                    new Gecmis { ID = 7, IslemTuru = "Kişi Silme", Aciklama = "Kişi silindi: Eski Müşteri", Zaman = DateTime.Now.AddDays(-5), Kullanici = "ayse.kaya" },
+                    new Gecmis { ID = 8, IslemTuru = "Sistem Çıkışı", Aciklama = "Kullanıcı sistemden çıkış yaptı", Zaman = DateTime.Now.AddDays(-6), Kullanici = "admin" }
+                };
+
+                var filtrelenmisIslemler = tumIslemler
+                    .Where(i => i.IslemTuru.ToLowerInvariant().Contains(AramaMetni.ToLowerInvariant()) ||
+                               i.Aciklama.ToLowerInvariant().Contains(AramaMetni.ToLowerInvariant()) ||
+                               i.Kullanici.ToLowerInvariant().Contains(AramaMetni.ToLowerInvariant()))
+                    .OrderByDescending(i => i.Zaman)
+                    .ToList();
+
+                GecmisListesi.Clear();
+                foreach (var islem in filtrelenmisIslemler)
+                {
+                    GecmisListesi.Add(islem);
+                }
+
+                OnPropertyChanged(nameof(ToplamIslemSayisi), nameof(ToplamIslemSayisiMetni), nameof(GecmisYok));
+                await Task.Delay(300);
             });
         }
 
@@ -192,8 +223,50 @@ namespace Arsivim.ViewModels
         {
             await ExecuteAsync(async () =>
             {
-                // Filtreleme işlemi simülasyonu
-                await Task.Delay(100);
+                var tumIslemler = new[]
+                {
+                    new Gecmis { ID = 1, IslemTuru = "Belge Ekleme", Aciklama = "Yeni belge eklendi: Fatura_2024.pdf", Zaman = DateTime.Now.AddHours(-2), Kullanici = "admin" },
+                    new Gecmis { ID = 2, IslemTuru = "Belge Silme", Aciklama = "Belge silindi: Eski_Dosya.doc", Zaman = DateTime.Now.AddHours(-5), Kullanici = "admin" },
+                    new Gecmis { ID = 3, IslemTuru = "Kişi Ekleme", Aciklama = "Yeni kişi eklendi: Mehmet Yılmaz", Zaman = DateTime.Now.AddDays(-1), Kullanici = "admin" },
+                    new Gecmis { ID = 4, IslemTuru = "Etiket Oluşturma", Aciklama = "Yeni etiket oluşturuldu: Acil", Zaman = DateTime.Now.AddDays(-2), Kullanici = "admin" },
+                    new Gecmis { ID = 5, IslemTuru = "Sistem Girişi", Aciklama = "Kullanıcı sisteme giriş yaptı", Zaman = DateTime.Now.AddDays(-3), Kullanici = "admin" },
+                    new Gecmis { ID = 6, IslemTuru = "Belge Güncelleme", Aciklama = "Belge güncellendi: Sözleşme.pdf", Zaman = DateTime.Now.AddDays(-4), Kullanici = "mehmet.yilmaz" },
+                    new Gecmis { ID = 7, IslemTuru = "Kişi Silme", Aciklama = "Kişi silindi: Eski Müşteri", Zaman = DateTime.Now.AddDays(-5), Kullanici = "ayse.kaya" },
+                    new Gecmis { ID = 8, IslemTuru = "Sistem Çıkışı", Aciklama = "Kullanıcı sistemden çıkış yaptı", Zaman = DateTime.Now.AddDays(-6), Kullanici = "admin" }
+                };
+
+                var filtrelenmisIslemler = tumIslemler.AsEnumerable();
+
+                // İşlem türü filtresi
+                if (SeciliIslemTuru != "Tümü")
+                {
+                    filtrelenmisIslemler = filtrelenmisIslemler.Where(i => i.IslemTuru == SeciliIslemTuru);
+                }
+
+                // Tarih aralığı filtresi
+                filtrelenmisIslemler = filtrelenmisIslemler.Where(i => 
+                    i.Zaman.Date >= BaslangicTarihi.Date && 
+                    i.Zaman.Date <= BitisTarihi.Date);
+
+                // Arama metni filtresi
+                if (!string.IsNullOrWhiteSpace(AramaMetni))
+                {
+                    filtrelenmisIslemler = filtrelenmisIslemler.Where(i => 
+                        i.IslemTuru.ToLowerInvariant().Contains(AramaMetni.ToLowerInvariant()) ||
+                        i.Aciklama.ToLowerInvariant().Contains(AramaMetni.ToLowerInvariant()) ||
+                        i.Kullanici.ToLowerInvariant().Contains(AramaMetni.ToLowerInvariant()));
+                }
+
+                GecmisListesi.Clear();
+                foreach (var islem in filtrelenmisIslemler.OrderByDescending(i => i.Zaman))
+                {
+                    GecmisListesi.Add(islem);
+                }
+
+                OnPropertyChanged(nameof(ToplamIslemSayisi), nameof(ToplamIslemSayisiMetni), nameof(GecmisYok));
+                await Task.Delay(500);
+                
+                await Application.Current.MainPage.DisplayAlert("Filtre", $"{GecmisListesi.Count} işlem bulundu.", "Tamam");
             });
         }
 

@@ -7,7 +7,7 @@
     Shell.FlyoutBehavior="Flyout"
     Title="Arsivim">
 
-    <FlyoutItem Title="Ana Sayfa" Icon="home.png">
+    <FlyoutItem Title="Ana Sayfa" Icon="home.png" IsVisible="true">
         <ShellContent
             Title="Ana Sayfa"
             ContentTemplate="{DataTemplate views:AnaSayfa}"
@@ -62,5 +62,31 @@
             ContentTemplate="{DataTemplate views:Ayarlar}"
             Route="Ayarlar" />
     </FlyoutItem>
+
+    <!-- Modal Pages -->
+    <ShellContent x:Name="BelgeEkle" 
+                  ContentTemplate="{DataTemplate views:BelgeEkle}" 
+                  Route="BelgeEkle" 
+                  Shell.PresentationMode="Modal" />
+    
+    <ShellContent x:Name="BelgeDetay" 
+                  ContentTemplate="{DataTemplate views:BelgeDetay}" 
+                  Route="BelgeDetay" 
+                  Shell.PresentationMode="Modal" />
+                  
+    <ShellContent x:Name="BelgeDuzenle" 
+                  ContentTemplate="{DataTemplate views:BelgeEkle}" 
+                  Route="BelgeDuzenle" 
+                  Shell.PresentationMode="Modal" />
+                  
+    <ShellContent x:Name="KisiEkle" 
+                  ContentTemplate="{DataTemplate views:KisiEkle}" 
+                  Route="KisiEkle" 
+                  Shell.PresentationMode="Modal" />
+                  
+    <ShellContent x:Name="KisiDetay" 
+                  ContentTemplate="{DataTemplate views:KisiEkle}" 
+                  Route="KisiDetay" 
+                  Shell.PresentationMode="Modal" />
 
 </Shell>

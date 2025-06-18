@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Arsivim.Core\Arsivim.Core.csproj" />
+    <ProjectReference Include="..\Arsivim.Shared\Arsivim.Shared.csproj" />
   </ItemGroup>
 
 </Project>

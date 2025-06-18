@@ -39,7 +39,9 @@ public static class MauiProgram
 		builder.Services.AddTransient<AnaSayfaVM>();
 		builder.Services.AddTransient<BelgeListeVM>();
 		builder.Services.AddTransient<BelgeDetayVM>();
+		builder.Services.AddTransient<BelgeEkleVM>();
 		builder.Services.AddTransient<KisiListeVM>();
+		builder.Services.AddTransient<KisiEkleVM>();
 		builder.Services.AddTransient<AyarlarVM>();
 		builder.Services.AddTransient<EtiketYonetimVM>();
 		builder.Services.AddTransient<GecmisVM>();
@@ -50,7 +52,9 @@ public static class MauiProgram
 		builder.Services.AddTransient<AnaSayfa>();
 		builder.Services.AddTransient<BelgeListesi>();
 		builder.Services.AddTransient<BelgeDetay>();
+		builder.Services.AddTransient<BelgeEkle>();
 		builder.Services.AddTransient<KisiListesi>();
+		builder.Services.AddTransient<KisiEkle>();
 		builder.Services.AddTransient<Ayarlar>();
 		builder.Services.AddTransient<EtiketYonetimi>();
 		builder.Services.AddTransient<Gecmis>();
