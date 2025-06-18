@@ -113,5 +113,25 @@ namespace Arsivim.Core.Models
         /// Favori kaydı
         /// </summary>
         public virtual Favori? Favori { get; set; }
+
+        /// <summary>
+        /// Belgenin etiketlerini saklamak için (UI tarafından set edilecek)
+        /// </summary>
+        public string EtiketlerText { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Belgenin etiketlerinin olup olmadığını döndürür (UI için)
+        /// </summary>
+        public bool HasEtiketler => !string.IsNullOrWhiteSpace(EtiketlerText);
+
+        /// <summary>
+        /// Belgeye bağlı kişi bilgilerini saklamak için (UI tarafından set edilecek)
+        /// </summary>
+        public string KisiText { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Belgenin bağlı kişisinin olup olmadığını döndürür (UI için)
+        /// </summary>
+        public bool HasKisi => !string.IsNullOrWhiteSpace(KisiText);
     }
 } 

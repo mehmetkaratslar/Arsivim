@@ -284,6 +284,9 @@ namespace Arsivim.ViewModels
                 // Gerçek veritabanından belgeleri al
                 var belgeler = await _belgeRepository.GetAllAsync();
                 
+                // Etiket-belge bağlantılarını al
+                var etiketBelgeBaglantilari = GetEtiketBelgeBaglantilari();
+                
                 return belgeler.Select(b => new
                 {
                     BelgeID = b.BelgeID,
@@ -291,7 +294,7 @@ namespace Arsivim.ViewModels
                     EklemeTarihi = b.YuklemeTarihi,
                     DosyaBoyutu = b.DosyaBoyutu,
                     Favori = b.Favori != null,
-                    Etiketler = string.Join(",", b.BelgeEtiketleri.Select(be => be.Etiket.EtiketAdi)),
+                    Etiketler = GetBelgeEtiketleriText(b.BelgeID, etiketBelgeBaglantilari),
                     DosyaTuru = GetDosyaTuruFromExtension(b.DosyaTipi ?? string.Empty)
                 });
             }
@@ -329,6 +332,68 @@ namespace Arsivim.ViewModels
             };
         }
 
+        /// <summary>
+        /// Preferences'tan etiket-belge bağlantılarını getirir
+        /// </summary>
+        private Dictionary<string, List<int>> GetEtiketBelgeBaglantilari()
+        {
+            try
+            {
+                var baglantiler = new Dictionary<string, List<int>>(StringComparer.OrdinalIgnoreCase);
+                
+                var baglantiStr = Preferences.Get("EtiketBelgeBaglantilari", string.Empty);
+                
+                if (!string.IsNullOrEmpty(baglantiStr))
+                {
+                    var baglantiListesi = baglantiStr.Split('|', StringSplitOptions.RemoveEmptyEntries);
+                    
+                    foreach (var baglantiItem in baglantiListesi)
+                    {
+                        var parcalar = baglantiItem.Split(':', StringSplitOptions.RemoveEmptyEntries);
+                        if (parcalar.Length >= 2)
+                        {
+                            var etiketAdi = parcalar[0];
+                            var belgeIdListesi = parcalar[1].Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                .Select(id => int.TryParse(id, out var belgeId) ? belgeId : 0)
+                                .Where(id => id > 0)
+                                .ToList();
+                            
+                            if (belgeIdListesi.Any())
+                            {
+                                baglantiler[etiketAdi] = belgeIdListesi;
+                            }
+                        }
+                    }
+                }
+                
+                return baglantiler;
+            }
+            catch
+            {
+                return new Dictionary<string, List<int>>();
+            }
+        }
+
+        /// <summary>
+        /// Belgeye ait etiketleri virgülle ayrılmış string olarak döndürür
+        /// </summary>
+        private string GetBelgeEtiketleriText(int belgeId, Dictionary<string, List<int>> etiketBelgeBaglantilari)
+        {
+            try
+            {
+                var belgeEtiketleri = etiketBelgeBaglantilari
+                    .Where(kvp => kvp.Value.Contains(belgeId))
+                    .Select(kvp => kvp.Key)
+                    .ToList();
+
+                return belgeEtiketleri.Any() ? string.Join(",", belgeEtiketleri) : string.Empty;
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
         private async Task<IEnumerable<dynamic>> GetKisilerAsync()
         {
             try
@@ -355,28 +420,96 @@ namespace Arsivim.ViewModels
 
         private async Task<IEnumerable<dynamic>> GetEtiketlerAsync()
         {
-            await Task.Delay(50);
-            return new[]
+            try
             {
-                new { EtiketID = 1, EtiketAdi = "Önemli", Renk = "#F44336" },
-                new { EtiketID = 2, EtiketAdi = "İş", Renk = "#2196F3" },
-                new { EtiketID = 3, EtiketAdi = "Kişisel", Renk = "#4CAF50" },
-                new { EtiketID = 4, EtiketAdi = "Fatura", Renk = "#FF9800" },
-                new { EtiketID = 5, EtiketAdi = "Sözleşme", Renk = "#9C27B0" }
-            };
+                // Preferences'tan global etiketleri al
+                var globalEtiketler = Preferences.Get("GlobalEtiketler", string.Empty);
+                var etiketListesi = new List<dynamic>();
+                
+                if (!string.IsNullOrEmpty(globalEtiketler))
+                {
+                    var etiketler = globalEtiketler.Split('|', StringSplitOptions.RemoveEmptyEntries);
+                    var id = 1;
+                    
+                    foreach (var etiketItem in etiketler)
+                    {
+                        var parcalar = etiketItem.Split(':', StringSplitOptions.RemoveEmptyEntries);
+                        if (parcalar.Length >= 2)
+                        {
+                            var etiketAdi = parcalar[0];
+                            var renk = parcalar[1];
+                            
+                            etiketListesi.Add(new { 
+                                EtiketID = id++, 
+                                EtiketAdi = etiketAdi, 
+                                Renk = renk 
+                            });
+                        }
+                    }
+                }
+                
+                await Task.Delay(50);
+                return etiketListesi;
+            }
+            catch
+            {
+                // Hata durumunda boş liste döndür
+                return new List<dynamic>();
+            }
         }
 
         private async Task<IEnumerable<dynamic>> GetGecmislerAsync()
         {
-            await Task.Delay(50);
-            return new[]
+            try
             {
-                new { ID = 1, IslemTuru = "Belge Ekleme", Zaman = DateTime.Now.AddHours(-2) },
-                new { ID = 2, IslemTuru = "Kişi Ekleme", Zaman = DateTime.Now.AddHours(-5) },
-                new { ID = 3, IslemTuru = "Etiket Oluşturma", Zaman = DateTime.Now.AddDays(-1) },
-                new { ID = 4, IslemTuru = "Belge Güncelleme", Zaman = DateTime.Now.AddDays(-2) },
-                new { ID = 5, IslemTuru = "Sistem Girişi", Zaman = DateTime.Now.AddDays(-3) }
-            };
+                // Preferences'tan geçmiş işlemleri al
+                var gecmisStr = Preferences.Get("IslemGecmisi", string.Empty);
+                var gecmisListesi = new List<dynamic>();
+                
+                if (!string.IsNullOrEmpty(gecmisStr))
+                {
+                    var gecmisler = gecmisStr.Split('|', StringSplitOptions.RemoveEmptyEntries);
+                    var id = 1;
+                    
+                    foreach (var gecmisItem in gecmisler.Take(50)) // Son 50 işlem
+                    {
+                        var parcalar = gecmisItem.Split(':', StringSplitOptions.RemoveEmptyEntries);
+                        if (parcalar.Length >= 2)
+                        {
+                            var islemTuru = parcalar[0];
+                            if (DateTime.TryParse(parcalar[1], out var zaman))
+                            {
+                                gecmisListesi.Add(new { 
+                                    ID = id++, 
+                                    IslemTuru = islemTuru, 
+                                    Zaman = zaman 
+                                });
+                            }
+                        }
+                    }
+                }
+                
+                // Eğer hiç geçmiş yoksa, en azından sistem başlangıcını ekle
+                if (!gecmisListesi.Any())
+                {
+                    gecmisListesi.Add(new { 
+                        ID = 1, 
+                        IslemTuru = "Sistem Başlangıcı", 
+                        Zaman = DateTime.Now.AddMinutes(-5) 
+                    });
+                }
+                
+                await Task.Delay(50);
+                return gecmisListesi.OrderByDescending(g => g.Zaman);
+            }
+            catch
+            {
+                // Hata durumunda örnek veriler döndür
+                return new[]
+                {
+                    new { ID = 1, IslemTuru = "Sistem Başlangıcı", Zaman = DateTime.Now.AddMinutes(-5) }
+                };
+            }
         }
 
         private async Task BelgeTuruIstatistikleriniGuncelleAsync(IEnumerable<dynamic> belgeler)

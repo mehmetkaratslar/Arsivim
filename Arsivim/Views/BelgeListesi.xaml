@@ -129,6 +129,46 @@
                                                           CommandParameter="{Binding .}" />
                                 </Grid.GestureRecognizers>
 
+                                <!-- PC Versiyonu için Context Menu -->
+                                <FlyoutBase.ContextFlyout>
+                                    <MenuFlyout>
+                                        <MenuFlyoutItem x:Name="OpenMenuItem" 
+                                                        Text="🔍 Aç" 
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:BelgeListeVM}}, Path=BelgeAcCommand}"
+                                                        CommandParameter="{Binding .}" />
+                                        <MenuFlyoutItem x:Name="DownloadMenuItem" 
+                                                        Text="⬇️ İndir" 
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:BelgeListeVM}}, Path=BelgeIndirCommand}"
+                                                        CommandParameter="{Binding .}" />
+                                        <MenuFlyoutItem x:Name="ShareMenuItem" 
+                                                        Text="📤 Paylaş" 
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:BelgeListeVM}}, Path=BelgePaylasCommand}"
+                                                        CommandParameter="{Binding .}" />
+                                        <MenuFlyoutSeparator />
+                                        <MenuFlyoutItem x:Name="EditMenuItem" 
+                                                        Text="✏️ Düzenle" 
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:BelgeListeVM}}, Path=BelgeDuzenleCommand}"
+                                                        CommandParameter="{Binding .}" />
+                                        <MenuFlyoutItem x:Name="CopyPathMenuItem" 
+                                                        Text="📋 Yolu Kopyala" 
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:BelgeListeVM}}, Path=YoluKopyalaCommand}"
+                                                        CommandParameter="{Binding .}" />
+                                        <MenuFlyoutItem x:Name="ShowInExplorerMenuItem" 
+                                                        Text="📁 Klasörde Göster" 
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:BelgeListeVM}}, Path=KlasordGosterCommand}"
+                                                        CommandParameter="{Binding .}" />
+                                        <MenuFlyoutSeparator />
+                                        <MenuFlyoutItem x:Name="FavoriteMenuItem" 
+                                                        Text="❤️ Favoriye Ekle/Çıkar" 
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:BelgeListeVM}}, Path=FavoriToggleCommand}"
+                                                        CommandParameter="{Binding .}" />
+                                        <MenuFlyoutItem x:Name="DeleteMenuItem" 
+                                                        Text="🗑️ Sil" 
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:BelgeListeVM}}, Path=BelgeSilCommand}"
+                                                        CommandParameter="{Binding .}" />
+                                    </MenuFlyout>
+                                </FlyoutBase.ContextFlyout>
+
                                 <!-- Belge Tipi İkonu -->
                                 <Frame Grid.Column="0"
                                        BackgroundColor="LightCoral"
@@ -162,6 +202,42 @@
                                            TextColor="DarkGray"
                                            LineBreakMode="TailTruncation"
                                            MaxLines="2" />
+                                    
+                                    <!-- Etiketler -->
+                                    <Frame BackgroundColor="#E3F2FD" 
+                                           Padding="8,4" 
+                                           CornerRadius="10" 
+                                           HasShadow="False"
+                                           IsVisible="{Binding HasEtiketler}">
+                                        <Label FontSize="11" 
+                                               TextColor="#1976D2"
+                                               FontAttributes="Bold">
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="🏷️ " />
+                                                    <Span Text="{Binding EtiketlerText}" />
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+                                    </Frame>
+
+                                    <!-- Kişi Bilgisi -->
+                                    <Frame BackgroundColor="#E8F5E8" 
+                                           Padding="8,4" 
+                                           CornerRadius="10" 
+                                           HasShadow="False"
+                                           IsVisible="{Binding HasKisi}">
+                                        <Label FontSize="11" 
+                                               TextColor="#2E7D32"
+                                               FontAttributes="Bold">
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="👤 " />
+                                                    <Span Text="{Binding KisiText}" />
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+                                    </Frame>
                                     
                                     <Label FontSize="11" TextColor="Blue">
                                         <Label.FormattedText>

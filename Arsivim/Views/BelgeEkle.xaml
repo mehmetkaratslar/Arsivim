@@ -208,6 +208,40 @@
                                     FontSize="16" />
                         </StackLayout>
 
+                        <!-- Kişi Seçimi -->
+                        <StackLayout Spacing="5">
+                            <Label Text="👤 İlgili Kişi" 
+                                   FontSize="14" 
+                                   FontAttributes="Bold"
+                                   TextColor="#374151" />
+                            <Picker ItemsSource="{Binding Kisiler}"
+                                    SelectedItem="{Binding SeciliKisi}"
+                                    ItemDisplayBinding="{Binding TamAd}"
+                                    Title="Kişi seçin..."
+                                    BackgroundColor="#F8F9FA"
+                                    TextColor="#343A40"
+                                    FontSize="16" />
+                            <Label Text="💡 İpucu: Bu belgeyi hangi kişiyle ilişkilendirmek istiyorsanız seçin." 
+                                   FontSize="12" 
+                                   TextColor="#6B7280"
+                                   Margin="0,5,0,0" />
+                        </StackLayout>
+
+                        <!-- Etiketler -->
+                        <StackLayout Spacing="5">
+                            <Label Text="🏷️ Etiketler" 
+                                   FontSize="14" 
+                                   FontAttributes="Bold"
+                                   TextColor="#374151" />
+                            <Entry Text="{Binding Etiketler}" 
+                                   Placeholder="Örn: Önemli, Fatura, İş, Kişisel (virgülle ayırın)"
+                                   Style="{StaticResource ModernEntryStyle}" />
+                            <Label Text="💡 İpucu: Etiketleri virgülle ayırın. Otomatik olarak etiket sayfasına eklenecek." 
+                                   FontSize="12" 
+                                   TextColor="#6B7280"
+                                   Margin="0,5,0,0" />
+                        </StackLayout>
+
                         <!-- Açıklama -->
                         <StackLayout Spacing="5">
                             <Label Text="Açıklama" 

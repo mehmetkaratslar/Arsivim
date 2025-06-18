@@ -25,6 +25,7 @@
             <converters:IslemTuruToIconConverter x:Key="IslemTuruToIconConverter" />
             <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
             <converters:BoolToTextConverter x:Key="BoolToTextConverter" />
+            <converters:StringToBoolConverter x:Key="StringToBoolConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -46,104 +46,37 @@
                     </StackLayout>
                 </Frame>
 
-                <!-- Etiket Ekleme/Düzenleme Formu -->
-                <Frame BackgroundColor="{AppThemeBinding Light=#F8F9FA, Dark=#2D3748}"
+                <!-- Bilgi Mesajı -->
+                <Frame BackgroundColor="{AppThemeBinding Light=#E3F2FD, Dark=#1E3A8A}" 
                        BorderColor="Transparent"
-                       CornerRadius="12"
+                       CornerRadius="12" 
                        Padding="20"
                        Margin="0,0,0,20">
-                    <StackLayout>
-                        <Label Text="{Binding DuzenlemeModu, Converter={StaticResource BoolToTextConverter}, ConverterParameter='Etiket Düzenle|Yeni Etiket Ekle'}"
-                               FontSize="20"
-                               FontAttributes="Bold"
-                               TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"
-                               Margin="0,0,0,15"/>
-
-                        <!-- Etiket Adı -->
-                        <Label Text="Etiket Adı *"
-                               FontSize="14"
-                               FontAttributes="Bold"
-                               TextColor="{AppThemeBinding Light=#4A5568, Dark=#A0AEC0}"
-                               Margin="0,0,0,5"/>
-                        <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#4A5568}"
-                               BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#718096}"
-                               CornerRadius="8"
-                               Padding="0"
-                               HasShadow="False"
-                               Margin="0,0,0,15">
-                            <Entry Text="{Binding YeniEtiketAdi}"
-                                   Placeholder="Etiket adını giriniz"
-                                   FontSize="16"
-                                   Margin="15,12"
-                                   BackgroundColor="Transparent"
-                                   TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"/>
-                        </Frame>
-
-                        <!-- Renk Seçimi -->
-                        <Label Text="Renk"
-                               FontSize="14"
-                               FontAttributes="Bold"
-                               TextColor="{AppThemeBinding Light=#4A5568, Dark=#A0AEC0}"
-                               Margin="0,0,0,5"/>
-                        <StackLayout Orientation="Horizontal" Spacing="10" Margin="0,0,0,15">
-                            <Frame BackgroundColor="{Binding YeniEtiketRenk}"
-                                   WidthRequest="40"
-                                   HeightRequest="40"
-                                   CornerRadius="20"
-                                   HasShadow="True"
-                                   BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#718096}"/>
-                            
-                            <StackLayout Orientation="Horizontal" Spacing="5" HorizontalOptions="FillAndExpand">
-                                <Button Text="🔴" BackgroundColor="#E53E3E" Command="{Binding RenkSecCommand}" CommandParameter="#E53E3E" WidthRequest="40" HeightRequest="40" CornerRadius="20"/>
-                                <Button Text="🟠" BackgroundColor="#DD6B20" Command="{Binding RenkSecCommand}" CommandParameter="#DD6B20" WidthRequest="40" HeightRequest="40" CornerRadius="20"/>
-                                <Button Text="🟡" BackgroundColor="#D69E2E" Command="{Binding RenkSecCommand}" CommandParameter="#D69E2E" WidthRequest="40" HeightRequest="40" CornerRadius="20"/>
-                                <Button Text="🟢" BackgroundColor="#38A169" Command="{Binding RenkSecCommand}" CommandParameter="#38A169" WidthRequest="40" HeightRequest="40" CornerRadius="20"/>
-                                <Button Text="🔵" BackgroundColor="#3182CE" Command="{Binding RenkSecCommand}" CommandParameter="#3182CE" WidthRequest="40" HeightRequest="40" CornerRadius="20"/>
-                                <Button Text="🟣" BackgroundColor="#805AD5" Command="{Binding RenkSecCommand}" CommandParameter="#805AD5" WidthRequest="40" HeightRequest="40" CornerRadius="20"/>
-                            </StackLayout>
+                    <StackLayout Spacing="15">
+                        <StackLayout Orientation="Horizontal" Spacing="10">
+                            <Label Text="💡" 
+                                   FontSize="24" 
+                                   VerticalOptions="Center" />
+                            <Label Text="Etiket Sistemi Nasıl Çalışır?" 
+                                   FontSize="18" 
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light=#1565C0, Dark=#BFDBFE}"
+                                   VerticalOptions="Center" />
                         </StackLayout>
-
-                        <!-- Açıklama -->
-                        <Label Text="Açıklama"
-                               FontSize="14"
-                               FontAttributes="Bold"
-                               TextColor="{AppThemeBinding Light=#4A5568, Dark=#A0AEC0}"
-                               Margin="0,0,0,5"/>
-                        <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#4A5568}"
-                               BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#718096}"
-                               CornerRadius="8"
-                               Padding="0"
-                               HasShadow="False"
-                               Margin="0,0,0,20">
-                            <Editor Text="{Binding YeniEtiketAciklama}"
-                                    Placeholder="Etiket açıklaması (opsiyonel)"
-                                    FontSize="16"
-                                    HeightRequest="80"
-                                    Margin="15,12"
-                                    BackgroundColor="Transparent"
-                                    TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"/>
-                        </Frame>
-
-                        <!-- Butonlar -->
-                        <StackLayout Orientation="Horizontal" Spacing="10" HorizontalOptions="FillAndExpand">
-                            <Button Text="{Binding DuzenlemeModu, Converter={StaticResource BoolToStringConverter}, ConverterParameter='✅ Güncelle|➕ Ekle'}"
-                                    Command="{Binding EtiketKaydetCommand}"
-                                    BackgroundColor="{AppThemeBinding Light=#3182CE, Dark=#4299E1}"
-                                    TextColor="White"
-                                    CornerRadius="8"
-                                    HeightRequest="45"
-                                    FontAttributes="Bold"
-                                    HorizontalOptions="FillAndExpand"/>
-                            
-                            <Button Text="❌ İptal"
-                                    Command="{Binding DuzenlemeIptalCommand}"
-                                    BackgroundColor="{AppThemeBinding Light=#718096, Dark=#A0AEC0}"
-                                    TextColor="White"
-                                    CornerRadius="8"
-                                    HeightRequest="45"
-                                    FontAttributes="Bold"
-                                    HorizontalOptions="FillAndExpand"
-                                    IsVisible="{Binding DuzenlemeModu}"/>
+                        
+                        <StackLayout Spacing="8">
+                            <Label Text="📄 Belge yüklerken etiket alanına etiketlerinizi yazın" 
+                                   FontSize="14" 
+                                   TextColor="{AppThemeBinding Light=#1976D2, Dark=#93C5FD}" />
+                            <Label Text="🏷️ Etiketleri virgülle ayırın: 'Önemli, Fatura, İş'" 
+                                   FontSize="14" 
+                                   TextColor="{AppThemeBinding Light=#1976D2, Dark=#93C5FD}" />
+                            <Label Text="✨ Etiketler otomatik olarak buraya eklenir" 
+                                   FontSize="14" 
+                                   TextColor="{AppThemeBinding Light=#1976D2, Dark=#93C5FD}" />
+                            <Label Text="🔍 Bu sayfadan etiketleri görüntüleyebilir ve arayabilirsiniz" 
+                                   FontSize="14" 
+                                   TextColor="{AppThemeBinding Light=#1976D2, Dark=#93C5FD}" />
                         </StackLayout>
                     </StackLayout>
                 </Frame>
@@ -180,7 +113,7 @@
                                            Padding="15"
                                            Margin="0,0,0,10"
                                            HasShadow="True">
-                                        <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="15">
+                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="15">
                                             
                                             <!-- Renk Göstergesi -->
                                             <Frame Grid.Column="0"
@@ -213,30 +146,6 @@
                                                            TextColor="{AppThemeBinding Light=#4A5568, Dark=#CBD5E0}"/>
                                                 </StackLayout>
                                             </StackLayout>
-
-                                            <!-- Düzenle Butonu -->
-                                            <Button Grid.Column="2"
-                                                    Text="✏️"
-                                                    BackgroundColor="{AppThemeBinding Light=#3182CE, Dark=#4299E1}"
-                                                    TextColor="White"
-                                                    CornerRadius="20"
-                                                    WidthRequest="40"
-                                                    HeightRequest="40"
-                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EtiketYonetimVM}}, Path=EtiketDuzenleCommand}"
-                                                    CommandParameter="{Binding .}"
-                                                    VerticalOptions="Center"/>
-
-                                            <!-- Sil Butonu -->
-                                            <Button Grid.Column="3"
-                                                    Text="🗑️"
-                                                    BackgroundColor="{AppThemeBinding Light=#E53E3E, Dark=#F56565}"
-                                                    TextColor="White"
-                                                    CornerRadius="20"
-                                                    WidthRequest="40"
-                                                    HeightRequest="40"
-                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EtiketYonetimVM}}, Path=EtiketSilCommand}"
-                                                    CommandParameter="{Binding .}"
-                                                    VerticalOptions="Center"/>
                                         </Grid>
                                     </Frame>
                                 </DataTemplate>

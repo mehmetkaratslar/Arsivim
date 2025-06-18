@@ -28,11 +28,11 @@ namespace Arsivim.ViewModels
             YenileCommand = new Command(async () => await YenileAsync());
             BelgeEkleCommand = new Command(async () => await BelgeEkleAsync());
             BelgeAcCommand = new Command<Belge>(async (belge) => await BelgeAcAsync(belge));
-            EtiketlerCommand = new Command(async () => await NavigateToAsync("///EtiketYonetimi"));
-            IstatistiklerCommand = new Command(async () => await NavigateToAsync("///Istatistikler"));
-            GecmisCommand = new Command(async () => await NavigateToAsync("///Gecmis"));
-            KullanicilarCommand = new Command(async () => await NavigateToAsync("///KullaniciYonetimi"));
-            BelgelerCommand = new Command(async () => await NavigateToAsync("///Belgeler"));
+            EtiketlerCommand = new Command(async () => await NavigateToAsync("//EtiketYonetimi"));
+            IstatistiklerCommand = new Command(async () => await NavigateToAsync("//Istatistikler"));
+            GecmisCommand = new Command(async () => await NavigateToAsync("//Gecmis"));
+            KullanicilarCommand = new Command(async () => await NavigateToAsync("//KullaniciYonetimi"));
+            BelgelerCommand = new Command(async () => await NavigateToAsync("//Belgeler"));
             NavigateToCommand = new Command<string>(async (route) => await NavigateToAsync(route));
 
             _ = Task.Run(InitializeAsync);
@@ -136,7 +136,7 @@ namespace Arsivim.ViewModels
         {
             try
             {
-                await Shell.Current.GoToAsync("///BelgeEkle");
+                await Shell.Current.GoToAsync("BelgeEkle");
             }
             catch (Exception ex)
             {
@@ -151,7 +151,7 @@ namespace Arsivim.ViewModels
             
             try
             {
-                await Shell.Current.GoToAsync($"///BelgeDetay?belgeId={belge.BelgeID}");
+                await Shell.Current.GoToAsync($"BelgeDetay?belgeId={belge.BelgeID}");
             }
             catch (Exception ex)
             {
@@ -164,12 +164,16 @@ namespace Arsivim.ViewModels
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine($"Navigating to: {route}");
                 await Shell.Current.GoToAsync(route);
+                System.Diagnostics.Debug.WriteLine($"Navigation successful to: {route}");
             }
             catch (Exception ex)
             {
                 // Hata durumunda ana sayfada kal
-                System.Diagnostics.Debug.WriteLine($"Navigation error: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Navigation error to {route}: {ex.Message}");
+                await Application.Current.MainPage.DisplayAlert("Navigation Hatası", 
+                    $"Sayfa açılamadı: {route}\nHata: {ex.Message}", "Tamam");
             }
         }
 

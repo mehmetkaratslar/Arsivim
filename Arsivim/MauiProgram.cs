@@ -7,6 +7,10 @@ using Arsivim.ViewModels;
 using Arsivim.Views;
 using CommunityToolkit.Maui;
 
+#if WINDOWS
+using Arsivim.Platforms.Windows;
+#endif
+
 namespace Arsivim;
 
 public static class MauiProgram
@@ -34,6 +38,11 @@ public static class MauiProgram
 
 		// Servisleri kaydet
 		builder.Services.AddScoped<BelgeYonetimi>();
+
+#if WINDOWS
+		// Windows özel servisler
+		builder.Services.AddSingleton<WindowsSpecificService>();
+#endif
 
 		// ViewModels'leri kaydet
 		builder.Services.AddTransient<AnaSayfaVM>();

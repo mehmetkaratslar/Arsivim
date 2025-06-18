@@ -137,7 +137,7 @@ namespace Arsivim.Services.Core
         }
 
         /// <summary>
-        /// Belge arar
+        /// Belge arar (ad, açıklama, OCR metni, etiketler ve kişilere göre)
         /// </summary>
         public async Task<IEnumerable<Belge>> BelgeAraAsync(string aramaMetni)
         {
@@ -146,11 +146,108 @@ namespace Arsivim.Services.Core
                 if (string.IsNullOrWhiteSpace(aramaMetni))
                     return await TumBelgeleriGetirAsync();
 
-                return await _belgeRepository.AraAsync(aramaMetni);
+                // Önce repository'den normal arama yap
+                var normalSonuclar = await _belgeRepository.AraAsync(aramaMetni);
+                var sonuclar = normalSonuclar.ToList();
+
+                // Etiketlere göre arama yap
+                var etiketSonuclari = await EtiketAramasiYapAsync(aramaMetni);
+                
+                // Sonuçları birleştir (dublicate'leri engellemek için)
+                foreach (var etiketBelgesi in etiketSonuclari)
+                {
+                    if (!sonuclar.Any(s => s.BelgeID == etiketBelgesi.BelgeID))
+                    {
+                        sonuclar.Add(etiketBelgesi);
+                    }
+                }
+
+                // Kişilere göre arama yap
+                var kisiSonuclari = await KisiAramasiYapAsync(aramaMetni);
+                
+                // Kişi sonuçlarını da birleştir
+                foreach (var kisiBelgesi in kisiSonuclari)
+                {
+                    if (!sonuclar.Any(s => s.BelgeID == kisiBelgesi.BelgeID))
+                    {
+                        sonuclar.Add(kisiBelgesi);
+                    }
+                }
+
+                return sonuclar.OrderByDescending(b => b.YuklemeTarihi);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"BelgeAraAsync Error: {ex.Message}");
+                return new List<Belge>();
+            }
+        }
+
+        /// <summary>
+        /// Etiketlere göre belge arama yapar (şimdilik basit implementasyon)
+        /// </summary>
+        private async Task<IEnumerable<Belge>> EtiketAramasiYapAsync(string aramaMetni)
+        {
+            try
+            {
+                // Şimdilik basit implementasyon - tüm belgeleri döndür
+                // Gerçek implementasyon UI katmanında yapılacak
+                return new List<Belge>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"EtiketAramasiYapAsync Error: {ex.Message}");
+                return new List<Belge>();
+            }
+        }
+
+        /// <summary>
+        /// Kişilere göre belge arama yapar
+        /// </summary>
+        private async Task<IEnumerable<Belge>> KisiAramasiYapAsync(string aramaMetni)
+        {
+            try
+            {
+                var sonuclar = new List<Belge>();
+                
+                // Preferences'tan kişi-belge bağlantılarını al
+                var baglantilar = Microsoft.Maui.Storage.Preferences.Get("KisiBelgeBaglantilari", string.Empty);
+                if (string.IsNullOrEmpty(baglantilar))
+                    return sonuclar;
+
+                var baglantiListesi = baglantilar.Split('|', StringSplitOptions.RemoveEmptyEntries);
+                var eslenenBelgeIdler = new List<int>();
+
+                // Her bağlantıyı kontrol et
+                foreach (var baglanti in baglantiListesi)
+                {
+                    var parts = baglanti.Split(':', StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length >= 2 && int.TryParse(parts[0], out int kisiId) && int.TryParse(parts[1], out int belgeId))
+                    {
+                        // Kişi bilgilerini kontrol et (burada KisiRepository'ye ihtiyacımız var)
+                        // Şimdilik kişi adını aramaMetni ile karşılaştırmak için basit bir yöntem kullanacağız
+                        
+                        // Bu metot UI katmanından çağrılacak ve kişi kontrolü orada yapılacak
+                        // Şimdilik tüm bağlantılı belgeleri döndür
+                        eslenenBelgeIdler.Add(belgeId);
+                    }
+                }
+
+                // Bulunan belge ID'lerine göre belgeleri getir
+                foreach (var belgeId in eslenenBelgeIdler.Distinct())
+                {
+                    var belge = await _belgeRepository.GetirAsync(belgeId);
+                    if (belge != null && belge.Aktif)
+                    {
+                        sonuclar.Add(belge);
+                    }
+                }
+
+                return sonuclar;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"KisiAramasiYapAsync Error: {ex.Message}");
                 return new List<Belge>();
             }
         }

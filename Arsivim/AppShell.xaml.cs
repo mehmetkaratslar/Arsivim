@@ -10,5 +10,9 @@ public partial class AppShell : Shell
 		
 		// Route registrations for programmatic navigation
 		Routing.RegisterRoute("BelgeDetay", typeof(BelgeDetay));
+		Routing.RegisterRoute("BelgeEkle", typeof(BelgeEkle));
+		Routing.RegisterRoute("BelgeDuzenle", typeof(BelgeEkle));
+		Routing.RegisterRoute("KisiEkle", typeof(KisiEkle));
+		Routing.RegisterRoute("KisiDetay", typeof(KisiEkle));
 	}
 }

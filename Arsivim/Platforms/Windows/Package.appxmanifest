@@ -2,18 +2,20 @@
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
   xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  IgnorableNamespaces="uap rescap">
+  IgnorableNamespaces="uap uap3 rescap">
 
-  <Identity Name="maui-package-name-placeholder" Publisher="CN=User Name" Version="0.0.0.0" />
+  <Identity Name="Arsivim.DocumentArchiveSystem" Publisher="CN=Arsivim Development" Version="1.0.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="57FBB4B1-EEF0-407F-AFBC-CA072B267310" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>$placeholder$</DisplayName>
-    <PublisherDisplayName>User Name</PublisherDisplayName>
-    <Logo>$placeholder$.png</Logo>
+    <DisplayName>Arsivim - Belge Arşiv Sistemi</DisplayName>
+    <PublisherDisplayName>Arsivim Development</PublisherDisplayName>
+    <Logo>Images\StoreLogo.png</Logo>
+    <Description>Profesyonel belge arşivleme ve yönetim sistemi. Belgelerinizi dijital ortamda organize edin, arayın ve yönetin.</Description>
   </Properties>
 
   <Dependencies>
@@ -23,24 +25,69 @@
 
   <Resources>
     <Resource Language="x-generate" />
+    <Resource Language="tr-TR" />
+    <Resource Language="en-US" />
   </Resources>
 
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="$placeholder$"
-        Description="$placeholder$"
-        Square150x150Logo="$placeholder$.png"
-        Square44x44Logo="$placeholder$.png"
+        DisplayName="Arsivim"
+        Description="Belge Arşiv Sistemi"
+        Square150x150Logo="Images\Square150x150Logo.png"
+        Square44x44Logo="Images\Square44x44Logo.png"
         BackgroundColor="transparent">
-        <uap:DefaultTile Square71x71Logo="$placeholder$.png" Wide310x150Logo="$placeholder$.png" Square310x310Logo="$placeholder$.png" />
-        <uap:SplashScreen Image="$placeholder$.png" />
+        <uap:DefaultTile 
+          Square71x71Logo="Images\SmallTile.png" 
+          Wide310x150Logo="Images\Wide310x150Logo.png" 
+          Square310x310Logo="Images\LargeTile.png"
+          ShortName="Arsivim">
+          <uap:ShowNameOnTiles>
+            <uap:ShowOn Tile="square150x150Logo"/>
+            <uap:ShowOn Tile="wide310x150Logo"/>
+            <uap:ShowOn Tile="square310x310Logo"/>
+          </uap:ShowNameOnTiles>
+        </uap:DefaultTile>
+        <uap:SplashScreen Image="Images\SplashScreen.png" />
+        <uap:InitialRotationPreference>
+          <uap:Rotation Preference="landscape"/>
+          <uap:Rotation Preference="landscapeFlipped"/>
+          <uap:Rotation Preference="portrait"/>
+          <uap:Rotation Preference="portraitFlipped"/>
+        </uap:InitialRotationPreference>
       </uap:VisualElements>
+      
+      <!-- File associations for document types -->
+      <Extensions>
+        <uap:Extension Category="windows.fileTypeAssociation">
+          <uap3:FileTypeAssociation Name="arsivim-doc">
+            <uap:SupportedFileTypes>
+              <uap:FileType>.pdf</uap:FileType>
+              <uap:FileType>.docx</uap:FileType>
+              <uap:FileType>.xlsx</uap:FileType>
+              <uap:FileType>.pptx</uap:FileType>
+              <uap:FileType>.jpg</uap:FileType>
+              <uap:FileType>.jpeg</uap:FileType>
+              <uap:FileType>.png</uap:FileType>
+              <uap:FileType>.tiff</uap:FileType>
+            </uap:SupportedFileTypes>
+            <uap:DisplayName>Arsivim Belge</uap:DisplayName>
+            <uap:InfoTip>Arsivim ile açılacak belge dosyası</uap:InfoTip>
+            <uap:EditFlags OpenIsSafe="true"/>
+          </uap3:FileTypeAssociation>
+        </uap:Extension>
+      </Extensions>
     </Application>
   </Applications>
 
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
+    <uap:Capability Name="documentsLibrary" />
+    <uap:Capability Name="picturesLibrary" />
+    <uap:Capability Name="removableStorage" />
+    <Capability Name="internetClient" />
+    <Capability Name="internetClientServer" />
+    <Capability Name="privateNetworkClientServer" />
   </Capabilities>
 
 </Package>

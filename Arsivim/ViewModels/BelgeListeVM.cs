@@ -4,12 +4,15 @@ using Arsivim.Core.Models;
 using Arsivim.Core.Enums;
 using Arsivim.Services.Core;
 using Arsivim.Shared.Helpers;
+using Arsivim.Data.Repositories;
+using Microsoft.Maui.ApplicationModel; // Replace Microsoft.Maui.Essentials with this namespace
 
 namespace Arsivim.ViewModels
 {
     public class BelgeListeVM : BaseViewModel
     {
         private readonly BelgeYonetimi _belgeYonetimi;
+        private readonly KisiRepository _kisiRepository;
         
         public ObservableCollection<Belge> Belgeler { get; } = new();
         public ObservableCollection<BelgeTipi> BelgeTipleri { get; } = new();
@@ -19,9 +22,10 @@ namespace Arsivim.ViewModels
         private Belge? _seciliBelge;
         private bool _sadeceFavoriler = false;
 
-        public BelgeListeVM(BelgeYonetimi belgeYonetimi)
+        public BelgeListeVM(BelgeYonetimi belgeYonetimi, KisiRepository kisiRepository)
         {
             _belgeYonetimi = belgeYonetimi;
+            _kisiRepository = kisiRepository;
             Title = "Belgeler";
 
             // Commands
@@ -34,6 +38,12 @@ namespace Arsivim.ViewModels
             BelgePaylasCommand = new Command<Belge>(async (belge) => await BelgePaylasAsync(belge));
             BelgeAcCommand = new Command<Belge>(async (belge) => await BelgeAcAsync(belge));
             FiltreTemizleCommand = new Command(async () => await FiltreTemizleAsync());
+            
+            // PC Özel Komutlar
+            BelgeDuzenleCommand = new Command<Belge>(async (belge) => await BelgeDuzenleAsync(belge));
+            YoluKopyalaCommand = new Command<Belge>(async (belge) => await YoluKopyalaAsync(belge));
+            KlasordGosterCommand = new Command<Belge>(belge => KlasordGoster(belge));
+            FavoriToggleCommand = new Command<Belge>(async (belge) => await FavoriToggleAsync(belge));
 
             // Belge tiplerini yükle
             BelgeTipleriniYukle();
@@ -103,6 +113,12 @@ namespace Arsivim.ViewModels
         public ICommand BelgePaylasCommand { get; }
         public ICommand BelgeAcCommand { get; }
         public ICommand FiltreTemizleCommand { get; }
+        
+        // PC Özel Komutlar
+        public ICommand BelgeDuzenleCommand { get; }
+        public ICommand YoluKopyalaCommand { get; }
+        public ICommand KlasordGosterCommand { get; }
+        public ICommand FavoriToggleCommand { get; }
 
         #endregion
 
@@ -123,6 +139,12 @@ namespace Arsivim.ViewModels
             Belgeler.Clear();
             foreach (var belge in belgeler.OrderByDescending(b => b.YuklemeTarihi))
             {
+                // Belgeye ait etiketleri set et
+                belge.EtiketlerText = GetBelgeEtiketleri(belge.BelgeID);
+                
+                // Belgeye ait kişi bilgilerini set et
+                belge.KisiText = await GetBelgeKisisiAsync(belge.BelgeID);
+                
                 Belgeler.Add(belge);
             }
 
@@ -139,11 +161,43 @@ namespace Arsivim.ViewModels
 
             await ExecuteAsync(async () =>
             {
-                var sonuclar = await _belgeYonetimi.BelgeAraAsync(AramaMetni);
+                // Önce normal arama yap
+                var normalSonuclar = await _belgeYonetimi.BelgeAraAsync(AramaMetni);
+                var sonuclar = normalSonuclar.ToList();
+
+                // Etiket araması yap
+                var etiketSonuclari = EtiketAramasiYap(AramaMetni);
+                
+                // Sonuçları birleştir (dublicate'leri engellemek için)
+                foreach (var etiketBelgesi in etiketSonuclari)
+                {
+                    if (!sonuclar.Any(s => s.BelgeID == etiketBelgesi.BelgeID))
+                    {
+                        sonuclar.Add(etiketBelgesi);
+                    }
+                }
+
+                // Kişi araması yap
+                var kisiSonuclari = await KisiAramasiYapAsync(AramaMetni);
+                
+                // Kişi sonuçlarını da birleştir
+                foreach (var kisiBelgesi in kisiSonuclari)
+                {
+                    if (!sonuclar.Any(s => s.BelgeID == kisiBelgesi.BelgeID))
+                    {
+                        sonuclar.Add(kisiBelgesi);
+                    }
+                }
                 
                 Belgeler.Clear();
                 foreach (var belge in sonuclar.OrderByDescending(b => b.YuklemeTarihi))
                 {
+                    // Belgeye ait etiketleri set et
+                    belge.EtiketlerText = GetBelgeEtiketleri(belge.BelgeID);
+                    
+                    // Belgeye ait kişi bilgilerini set et
+                    belge.KisiText = await GetBelgeKisisiAsync(belge.BelgeID);
+                    
                     Belgeler.Add(belge);
                 }
 
@@ -182,6 +236,12 @@ namespace Arsivim.ViewModels
                 Belgeler.Clear();
                 foreach (var belge in belgeler.OrderByDescending(b => b.YuklemeTarihi))
                 {
+                    // Belgeye ait etiketleri set et
+                    belge.EtiketlerText = GetBelgeEtiketleri(belge.BelgeID);
+                    
+                    // Belgeye ait kişi bilgilerini set et
+                    belge.KisiText = await GetBelgeKisisiAsync(belge.BelgeID);
+                    
                     Belgeler.Add(belge);
                 }
 
@@ -200,7 +260,7 @@ namespace Arsivim.ViewModels
         private async Task BelgeEkleAsync()
         {
             // Belge ekleme sayfasına navigasyon
-            await Shell.Current.GoToAsync("///BelgeEkle");
+            await Shell.Current.GoToAsync("BelgeEkle");
         }
 
         private async Task BelgeSecAsync(Belge belge)
@@ -208,7 +268,7 @@ namespace Arsivim.ViewModels
             if (belge == null) return;
 
             SeciliBelge = belge;
-            await Shell.Current.GoToAsync($"///BelgeDetay?belgeId={belge.BelgeID}");
+            await Shell.Current.GoToAsync($"BelgeDetay?belgeId={belge.BelgeID}");
         }
 
         private async Task BelgeSilAsync(Belge belge)
@@ -385,6 +445,336 @@ namespace Arsivim.ViewModels
         {
             return DosyaYardimcisi.BoyutFormatla(boyut);
         }
+
+        /// <summary>
+        /// Belgeye ait etiketleri getirir
+        /// </summary>
+        public string GetBelgeEtiketleri(int belgeId)
+        {
+            try
+            {
+                var baglantiler = GetEtiketBelgeBaglantilari();
+                var belgeEtiketleri = baglantiler
+                    .Where(kvp => kvp.Value.Contains(belgeId))
+                    .Select(kvp => kvp.Key)
+                    .ToList();
+
+                return belgeEtiketleri.Any() ? string.Join(", ", belgeEtiketleri) : string.Empty;
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Etiketlere göre belge arama yapar
+        /// </summary>
+        private List<Belge> EtiketAramasiYap(string aramaMetni)
+        {
+            try
+            {
+                var sonuclar = new List<Belge>();
+                
+                // Global etiket-belge bağlantılarını al
+                var etiketBelgeBaglantilari = GetEtiketBelgeBaglantilari();
+                
+                // Arama metnini küçük harfe çevir
+                var aramaTerimi = aramaMetni.ToLowerInvariant();
+                
+                // Eşleşen etiketleri bul
+                var eslesenBelgeIdler = etiketBelgeBaglantilari
+                    .Where(kvp => kvp.Key.ToLowerInvariant().Contains(aramaTerimi))
+                    .SelectMany(kvp => kvp.Value)
+                    .Distinct()
+                    .ToList();
+
+                // Tüm belgeleri al ve eşleşenleri filtrele
+                var tumBelgeler = _belgeYonetimi.TumBelgeleriGetirAsync().GetAwaiter().GetResult();
+                
+                foreach (var belgeId in eslesenBelgeIdler)
+                {
+                    var belge = tumBelgeler.FirstOrDefault(b => b.BelgeID == belgeId);
+                    if (belge != null)
+                    {
+                        sonuclar.Add(belge);
+                    }
+                }
+
+                return sonuclar;
+            }
+            catch
+            {
+                return new List<Belge>();
+            }
+        }
+
+        /// <summary>
+        /// Preferences'tan etiket-belge bağlantılarını getirir
+        /// </summary>
+        private Dictionary<string, List<int>> GetEtiketBelgeBaglantilari()
+        {
+            try
+            {
+                var baglantiler = new Dictionary<string, List<int>>(StringComparer.OrdinalIgnoreCase);
+                
+                var baglantiStr = Preferences.Get("EtiketBelgeBaglantilari", string.Empty);
+                
+                if (!string.IsNullOrEmpty(baglantiStr))
+                {
+                    var baglantiListesi = baglantiStr.Split('|', StringSplitOptions.RemoveEmptyEntries);
+                    
+                    foreach (var baglantiItem in baglantiListesi)
+                    {
+                        var parcalar = baglantiItem.Split(':', StringSplitOptions.RemoveEmptyEntries);
+                        if (parcalar.Length >= 2)
+                        {
+                            var etiketAdi = parcalar[0];
+                            var belgeIdListesi = parcalar[1].Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                .Where(id => int.TryParse(id, out _))
+                                .Select(int.Parse)
+                                .ToList();
+
+                            if (belgeIdListesi.Any())
+                            {
+                                baglantiler[etiketAdi] = belgeIdListesi;
+                            }
+                        }
+                    }
+                }
+
+                return baglantiler;
+            }
+            catch
+            {
+                return new Dictionary<string, List<int>>();
+            }
+        }
+
+        /// <summary>
+        /// Kişilere göre belge arama yapar
+        /// </summary>
+        private async Task<List<Belge>> KisiAramasiYapAsync(string aramaMetni)
+        {
+            try
+            {
+                var sonuclar = new List<Belge>();
+                
+                // Önce kişileri ara
+                var kisiler = await _kisiRepository.SearchAsync(aramaMetni);
+                var bulunanKisiIdler = kisiler.Select(k => k.KisiID).ToList();
+                
+                if (!bulunanKisiIdler.Any())
+                    return sonuclar;
+                
+                // Kişi-belge bağlantılarını al
+                var baglantilar = Preferences.Get("KisiBelgeBaglantilari", string.Empty);
+                if (string.IsNullOrEmpty(baglantilar))
+                    return sonuclar;
+
+                var baglantiListesi = baglantilar.Split('|', StringSplitOptions.RemoveEmptyEntries);
+                var eslenenBelgeIdler = new List<int>();
+
+                // Bulunan kişilere ait belgeleri bul
+                foreach (var baglanti in baglantiListesi)
+                {
+                    var parts = baglanti.Split(':', StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length >= 2 && int.TryParse(parts[0], out int kisiId) && int.TryParse(parts[1], out int belgeId))
+                    {
+                        if (bulunanKisiIdler.Contains(kisiId))
+                        {
+                            eslenenBelgeIdler.Add(belgeId);
+                        }
+                    }
+                }
+
+                // Tüm belgeleri al ve eşleşenleri filtrele
+                var tumBelgeler = await _belgeYonetimi.TumBelgeleriGetirAsync();
+                
+                foreach (var belgeId in eslenenBelgeIdler.Distinct())
+                {
+                    var belge = tumBelgeler.FirstOrDefault(b => b.BelgeID == belgeId);
+                    if (belge != null && belge.Aktif)
+                    {
+                        sonuclar.Add(belge);
+                    }
+                }
+
+                return sonuclar;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Kişi araması hatası: {ex.Message}");
+                return new List<Belge>();
+            }
+        }
+
+        /// <summary>
+        /// Belgeye ait kişi bilgilerini getirir
+        /// </summary>
+        private async Task<string> GetBelgeKisisiAsync(int belgeId)
+        {
+            try
+            {
+                // Kişi-belge bağlantılarını al
+                var baglantilar = Preferences.Get("KisiBelgeBaglantilari", string.Empty);
+                if (string.IsNullOrEmpty(baglantilar))
+                    return string.Empty;
+
+                var baglantiListesi = baglantilar.Split('|', StringSplitOptions.RemoveEmptyEntries);
+                var kisiIdler = new List<int>();
+
+                // Bu belgeye bağlı kişileri bul
+                foreach (var baglanti in baglantiListesi)
+                {
+                    var parts = baglanti.Split(':', StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length >= 2 && int.TryParse(parts[0], out int kisiId) && int.TryParse(parts[1], out int belgId))
+                    {
+                        if (belgId == belgeId)
+                        {
+                            kisiIdler.Add(kisiId);
+                        }
+                    }
+                }
+
+                if (!kisiIdler.Any())
+                    return string.Empty;
+
+                // Kişi bilgilerini getir
+                var kisiAdlari = new List<string>();
+                foreach (var kisiId in kisiIdler.Distinct())
+                {
+                    var kisi = await _kisiRepository.GetirAsync(kisiId);
+                    if (kisi != null && kisi.Aktif)
+                    {
+                        kisiAdlari.Add(kisi.TamAd);
+                    }
+                }
+
+                return kisiAdlari.Any() ? string.Join(", ", kisiAdlari) : string.Empty;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Kişi bilgisi getirme hatası: {ex.Message}");
+                return string.Empty;
+            }
+        }
+
+        #region PC Özel Metodlar
+
+        private async Task BelgeDuzenleAsync(Belge belge)
+        {
+            if (belge == null) return;
+
+            try
+            {
+                await Shell.Current.GoToAsync($"BelgeEkle?belgeId={belge.BelgeID}");
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlert("Hata", 
+                    $"Belge düzenleme sayfası açılırken hata oluştu: {ex.Message}", "Tamam");
+            }
+        }
+
+        private async Task YoluKopyalaAsync(Belge belge)
+        {
+            if (belge == null) return;
+
+            try
+            {
+                // Dosya geçici bir konuma kaydet ve yolunu kopyala
+                var tempFileName = $"{belge.BelgeAdi}_{DateTime.Now:yyyyMMdd_HHmmss}{belge.DosyaTipi}";
+                var tempPath = Path.Combine(Path.GetTempPath(), tempFileName);
+
+                await File.WriteAllBytesAsync(tempPath, belge.Dosya);
+
+#if WINDOWS
+                // Windows'ta clipboard'a kopyala
+                await Clipboard.Default.SetTextAsync(tempPath);
+#endif
+
+                await Application.Current.MainPage.DisplayAlert("Başarılı", 
+                    "Dosya yolu panoya kopyalandı.", "Tamam");
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlert("Hata", 
+                    $"Dosya yolu kopyalanırken hata oluştu: {ex.Message}", "Tamam");
+            }
+        }
+
+        private void KlasordGoster(Belge belge)
+        {
+            if (belge == null) return;
+
+#if WINDOWS
+            try
+            {
+                // Dosyayı geçici bir konuma kaydet
+                var tempFileName = $"{belge.BelgeAdi}_{DateTime.Now:yyyyMMdd_HHmmss}{belge.DosyaTipi}";
+                var tempPath = Path.Combine(Path.GetTempPath(), tempFileName);
+
+                File.WriteAllBytes(tempPath, belge.Dosya);
+
+                // Windows Explorer'da göster
+                Arsivim.Platforms.Windows.WindowsSpecificService.OpenFileInExplorer(tempPath);
+            }
+            catch (Exception ex)
+            {
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    await Application.Current.MainPage.DisplayAlert("Hata", 
+                        $"Dosya klasörde gösterilirken hata oluştu: {ex.Message}", "Tamam");
+                });
+            }
+#else
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                await Application.Current.MainPage.DisplayAlert("Bilgi", 
+                    "Bu özellik sadece Windows'ta kullanılabilir.", "Tamam");
+            });
+#endif
+        }
+
+        private async Task FavoriToggleAsync(Belge belge)
+        {
+            if (belge == null) return;
+
+            try
+            {
+                if (belge.Favori != null)
+                {
+                    // Favoriden çıkar
+                    await _belgeYonetimi.FavoridanCikarAsync(belge.BelgeID);
+                    belge.Favori = null;
+                    await Application.Current.MainPage.DisplayAlert("Başarılı", 
+                        "Belge favorilerden çıkarıldı.", "Tamam");
+                }
+                else
+                {
+                    // Favoriye ekle
+                    await _belgeYonetimi.FavoriyeEkleAsync(belge.BelgeID);
+                    belge.Favori = new Favori 
+                    { 
+                        BelgeID = belge.BelgeID, 
+                        Tarih = DateTime.Now 
+                    };
+                    await Application.Current.MainPage.DisplayAlert("Başarılı", 
+                        "Belge favorilere eklendi.", "Tamam");
+                }
+
+                // UI'ı güncelle
+                OnPropertyChanged();
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlert("Hata", 
+                    $"Favori işlemi yapılırken hata oluştu: {ex.Message}", "Tamam");
+            }
+        }
+
+        #endregion
 
         #endregion
     }

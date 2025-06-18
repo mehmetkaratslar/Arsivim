@@ -2,24 +2,20 @@ using System.Globalization;
 
 namespace Arsivim.Converters
 {
-    public class InvertedBoolConverter : IValueConverter
+    public class StringToBoolConverter : IValueConverter
     {
         public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            if (value is bool boolValue)
+            if (value is string stringValue)
             {
-                return !boolValue;
+                return !string.IsNullOrWhiteSpace(stringValue);
             }
             return false;
         }
 
         public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            if (value is bool boolValue)
-            {
-                return !boolValue;
-            }
-            return false;
+            throw new NotImplementedException();
         }
     }
 } 
