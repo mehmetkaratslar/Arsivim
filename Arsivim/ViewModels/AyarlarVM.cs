@@ -31,7 +31,8 @@ namespace Arsivim.ViewModels
             AyarlariKaydetCommand = new Command(async () => await AyarlariKaydetAsync());
             VarsayilanAyarlariYukleCommand = new Command(async () => await VarsayilanAyarlariYukleAsync());
 
-            _ = Task.Run(AyarlariYukleAsync);
+            // UI thread'de güvenli başlatma
+            MainThread.BeginInvokeOnMainThread(async () => await AyarlariYukleAsync());
         }
 
         #region Properties

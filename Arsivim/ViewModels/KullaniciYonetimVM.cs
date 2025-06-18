@@ -33,7 +33,8 @@ namespace Arsivim.ViewModels
             DuzenlemeIptalCommand = new Command(async () => await DuzenlemeIptalAsync());
             YeniKullaniciCommand = new Command(async () => await KullaniciEkleAsync());
 
-            _ = Task.Run(InitializeAsync);
+            // UI thread'de güvenli başlatma
+            MainThread.BeginInvokeOnMainThread(async () => await InitializeAsync());
         }
 
         #region Properties

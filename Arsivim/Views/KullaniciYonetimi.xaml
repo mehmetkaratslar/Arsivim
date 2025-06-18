@@ -206,9 +206,9 @@
                         <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
                             <Button Grid.Column="0"
                                     Text="{Binding DuzenlemeModu, Converter={StaticResource BoolToTextConverter}, ConverterParameter='Güncelle|Ekle'}"
-                                    Command="{Binding DuzenlemeModu, Converter={StaticResource BoolToCommandConverter}, ConverterParameter='{Binding KullaniciKaydetCommand}|{Binding KullaniciEkleCommand}'}"
+                                    Command="{Binding KullaniciEkleCommand}"
                                     BackgroundColor="{AppThemeBinding Light=#3182CE, Dark=#4299E1}"
-                                    TextColor="White"
+                                    TextColor="{AppThemeBinding Light=White, Dark={StaticResource DarkButtonText}}"
                                     CornerRadius="8"
                                     HeightRequest="45"/>
                             
@@ -216,7 +216,7 @@
                                     Text="İptal"
                                     Command="{Binding DuzenlemeIptalCommand}"
                                     BackgroundColor="{AppThemeBinding Light=#718096, Dark=#A0AEC0}"
-                                    TextColor="White"
+                                    TextColor="{AppThemeBinding Light=White, Dark={StaticResource DarkButtonText}}"
                                     CornerRadius="8"
                                     HeightRequest="45"/>
 
@@ -224,7 +224,7 @@
                                     Text="Temizle"
                                     Command="{Binding YeniKullaniciCommand}"
                                     BackgroundColor="{AppThemeBinding Light=#D69E2E, Dark=#F6E05E}"
-                                    TextColor="White"
+                                    TextColor="{AppThemeBinding Light=White, Dark={StaticResource DarkButtonText}}"
                                     CornerRadius="8"
                                     HeightRequest="45"/>
                         </Grid>

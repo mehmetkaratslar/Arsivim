@@ -75,11 +75,11 @@
                         <Label Text="{Binding DuzenlemeModu, Converter={StaticResource BoolToStringConverter}, ConverterParameter='📝 Belge Düzenle|📄 Yeni Belge Ekle'}" 
                                FontSize="24" 
                                FontAttributes="Bold" 
-                               TextColor="#1F2937"
+                               TextColor="{AppThemeBinding Light=#1F2937, Dark=White}"
                                HorizontalTextAlignment="Center" />
                         <Label Text="{Binding DuzenlemeModu, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Belge bilgilerini düzenleyin|Belgenizi seçin ve gerekli bilgileri doldurun'}" 
                                FontSize="14" 
-                               TextColor="#6B7280"
+                               TextColor="{AppThemeBinding Light=#6B7280, Dark={StaticResource Gray300}}"
                                HorizontalTextAlignment="Center" />
                     </StackLayout>
                 </Frame>
