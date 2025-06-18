@@ -3,13 +3,64 @@
     x:Class="Arsivim.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:Arsivim"
-    Shell.FlyoutBehavior="Disabled"
+    xmlns:views="clr-namespace:Arsivim.Views"
+    Shell.FlyoutBehavior="Flyout"
     Title="Arsivim">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <FlyoutItem Title="Ana Sayfa" Icon="home.png">
+        <ShellContent
+            Title="Ana Sayfa"
+            ContentTemplate="{DataTemplate views:AnaSayfa}"
+            Route="AnaSayfa" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Belgeler" Icon="folder.png">
+        <ShellContent
+            Title="Belgeler"
+            ContentTemplate="{DataTemplate views:BelgeListesi}"
+            Route="Belgeler" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Kişiler" Icon="people.png">
+        <ShellContent
+            Title="Kişiler"
+            ContentTemplate="{DataTemplate views:KisiListesi}"
+            Route="Kisiler" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Etiketler" Icon="tag.png">
+        <ShellContent
+            Title="Etiket Yönetimi"
+            ContentTemplate="{DataTemplate views:EtiketYonetimi}"
+            Route="EtiketYonetimi" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="İstatistikler" Icon="chart.png">
+        <ShellContent
+            Title="İstatistikler"
+            ContentTemplate="{DataTemplate views:Istatistikler}"
+            Route="Istatistikler" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Geçmiş" Icon="history.png">
+        <ShellContent
+            Title="İşlem Geçmişi"
+            ContentTemplate="{DataTemplate views:Gecmis}"
+            Route="Gecmis" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Kullanıcılar" Icon="users.png">
+        <ShellContent
+            Title="Kullanıcı Yönetimi"
+            ContentTemplate="{DataTemplate views:KullaniciYonetimi}"
+            Route="KullaniciYonetimi" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Ayarlar" Icon="settings.png">
+        <ShellContent
+            Title="Ayarlar"
+            ContentTemplate="{DataTemplate views:Ayarlar}"
+            Route="Ayarlar" />
+    </FlyoutItem>
 
 </Shell>

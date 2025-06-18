@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="Arsivim.Views.KullaniciYonetimi"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Arsivim.ViewModels"
+             xmlns:model="clr-namespace:Arsivim.Core.Models;assembly=Arsivim.Core"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:DataType="vm:KullaniciYonetimVM"
+             Title="{Binding Title}">
+    
+    <Grid>
+        <ScrollView IsVisible="{Binding Yuklenme, Converter={StaticResource InvertedBoolConverter}}">
+            <StackLayout Padding="20">
+                
+                <!-- Başlık ve Kontroller -->
+                <Frame BackgroundColor="{AppThemeBinding Light=#F8F9FA, Dark=#2D3748}"
+                       BorderColor="Transparent"
+                       CornerRadius="12"
+                       Padding="20"
+                       Margin="0,0,0,20">
+                    <StackLayout>
+                        <Label Text="👥 Kullanıcı Yönetimi"
+                               FontSize="28"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"
+                               HorizontalOptions="Center"
+                               Margin="0,0,0,20"/>
+                        
+                        <!-- Arama ve Kullanıcı Ekleme -->
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                            <!-- Arama Kutusu -->
+                            <Frame Grid.Column="0"
+                                   BackgroundColor="{AppThemeBinding Light=White, Dark=#4A5568}"
+                                   BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#718096}"
+                                   CornerRadius="8"
+                                   Padding="0"
+                                   HasShadow="False">
+                                <Entry Text="{Binding AramaMetni}"
+                                       Placeholder="Kullanıcı adı, tam ad veya e-posta ara..."
+                                       FontSize="16"
+                                       Margin="15,12"
+                                       BackgroundColor="Transparent"
+                                       TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}">
+                                                                <Entry.Behaviors>
+                                <toolkit:EventToCommandBehavior EventName="TextChanged" Command="{Binding AraCommand}" />
+                            </Entry.Behaviors>
+                                </Entry>
+                            </Frame>
+
+                            <!-- Kullanıcı Ekleme Butonu -->
+                            <Button Grid.Column="1"
+                                    Text="➕"
+                                    BackgroundColor="{AppThemeBinding Light=#38A169, Dark=#48BB78}"
+                                    TextColor="White"
+                                    CornerRadius="8"
+                                    WidthRequest="50"
+                                    HeightRequest="45"
+                                    Command="{Binding KullaniciEklemePaneliToggleCommand}"/>
+                        </Grid>
+                    </StackLayout>
+                </Frame>
+
+                <!-- Kullanıcı Ekleme/Düzenleme Formu -->
+                <Frame IsVisible="{Binding KullaniciEklemePaneli}"
+                       BackgroundColor="{AppThemeBinding Light=#F8F9FA, Dark=#2D3748}"
+                       BorderColor="Transparent"
+                       CornerRadius="12"
+                       Padding="20"
+                       Margin="0,0,0,20">
+                    <StackLayout>
+                        <Label Text="{Binding DuzenlemeModu, Converter={StaticResource BoolToTextConverter}, ConverterParameter='Kullanıcı Düzenle|Yeni Kullanıcı Ekle'}"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"
+                               Margin="0,0,0,15"/>
+
+                        <!-- Kullanıcı Adı -->
+                        <Label Text="Kullanıcı Adı *"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#4A5568, Dark=#A0AEC0}"
+                               Margin="0,0,0,5"/>
+                        <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#4A5568}"
+                               BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#718096}"
+                               CornerRadius="8"
+                               Padding="0"
+                               HasShadow="False"
+                               Margin="0,0,0,15">
+                            <Entry Text="{Binding YeniKullaniciAdi}"
+                                   Placeholder="Kullanıcı adını giriniz"
+                                   FontSize="16"
+                                   Margin="15,12"
+                                   BackgroundColor="Transparent"
+                                   TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"/>
+                        </Frame>
+
+                        <!-- Tam Ad -->
+                        <Label Text="Tam Ad"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#4A5568, Dark=#A0AEC0}"
+                               Margin="0,0,0,5"/>
+                        <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#4A5568}"
+                               BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#718096}"
+                               CornerRadius="8"
+                               Padding="0"
+                               HasShadow="False"
+                               Margin="0,0,0,15">
+                            <Entry Text="{Binding YeniTamAd}"
+                                   Placeholder="Tam adını giriniz"
+                                   FontSize="16"
+                                   Margin="15,12"
+                                   BackgroundColor="Transparent"
+                                   TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"/>
+                        </Frame>
+
+                        <!-- E-posta -->
+                        <Label Text="E-posta"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#4A5568, Dark=#A0AEC0}"
+                               Margin="0,0,0,5"/>
+                        <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#4A5568}"
+                               BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#718096}"
+                               CornerRadius="8"
+                               Padding="0"
+                               HasShadow="False"
+                               Margin="0,0,0,15">
+                            <Entry Text="{Binding YeniEmail}"
+                                   Placeholder="E-posta adresini giriniz"
+                                   Keyboard="Email"
+                                   FontSize="16"
+                                   Margin="15,12"
+                                   BackgroundColor="Transparent"
+                                   TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"/>
+                        </Frame>
+
+                        <!-- Şifre Bölümü -->
+                        <Label Text="{Binding DuzenlemeModu, Converter={StaticResource BoolToTextConverter}, ConverterParameter='Yeni Şifre (boş bırakılırsa değişmez)|Şifre *'}"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#4A5568, Dark=#A0AEC0}"
+                               Margin="0,0,0,5"/>
+
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" Margin="0,0,0,10">
+                            <Frame Grid.Column="0"
+                                   BackgroundColor="{AppThemeBinding Light=White, Dark=#4A5568}"
+                                   BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#718096}"
+                                   CornerRadius="8"
+                                   Padding="0"
+                                   HasShadow="False">
+                                <Entry Text="{Binding YeniSifre}"
+                                       Placeholder="Şifre giriniz"
+                                       IsPassword="{Binding SifreGoster, Converter={StaticResource InvertedBoolConverter}}"
+                                       FontSize="16"
+                                       Margin="15,12"
+                                       BackgroundColor="Transparent"
+                                       TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"/>
+                            </Frame>
+                            
+                            <Button Grid.Column="1"
+                                    Text="{Binding SifreGoster, Converter={StaticResource BoolToTextConverter}, ConverterParameter='🙈|👁️'}"
+                                    BackgroundColor="{AppThemeBinding Light=#718096, Dark=#A0AEC0}"
+                                    TextColor="White"
+                                    CornerRadius="8"
+                                    WidthRequest="50"
+                                    HeightRequest="45"
+                                    Command="{Binding SifreGosterToggleCommand}"/>
+                        </Grid>
+
+                        <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#4A5568}"
+                               BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#718096}"
+                               CornerRadius="8"
+                               Padding="0"
+                               HasShadow="False"
+                               Margin="0,0,0,15">
+                            <Entry Text="{Binding YeniSifreTekrar}"
+                                   Placeholder="Şifreyi tekrar giriniz"
+                                   IsPassword="{Binding SifreGoster, Converter={StaticResource InvertedBoolConverter}}"
+                                   FontSize="16"
+                                   Margin="15,12"
+                                   BackgroundColor="Transparent"
+                                   TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"/>
+                        </Frame>
+
+                        <!-- Yetkiler -->
+                        <StackLayout Orientation="Horizontal" Spacing="20" Margin="0,0,0,20">
+                            <StackLayout Orientation="Horizontal" Spacing="10">
+                                <CheckBox IsChecked="{Binding YeniYonetici}" Color="{AppThemeBinding Light=#3182CE, Dark=#4299E1}"/>
+                                <Label Text="Yönetici Yetkisi"
+                                       FontSize="16"
+                                       TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"
+                                       VerticalOptions="Center"/>
+                            </StackLayout>
+
+                            <StackLayout Orientation="Horizontal" Spacing="10">
+                                <CheckBox IsChecked="{Binding YeniAktif}" Color="{AppThemeBinding Light=#38A169, Dark=#48BB78}"/>
+                                <Label Text="Aktif Hesap"
+                                       FontSize="16"
+                                       TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"
+                                       VerticalOptions="Center"/>
+                            </StackLayout>
+                        </StackLayout>
+
+                        <!-- Butonlar -->
+                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                            <Button Grid.Column="0"
+                                    Text="{Binding DuzenlemeModu, Converter={StaticResource BoolToTextConverter}, ConverterParameter='Güncelle|Ekle'}"
+                                    Command="{Binding DuzenlemeModu, Converter={StaticResource BoolToCommandConverter}, ConverterParameter='{Binding KullaniciKaydetCommand}|{Binding KullaniciEkleCommand}'}"
+                                    BackgroundColor="{AppThemeBinding Light=#3182CE, Dark=#4299E1}"
+                                    TextColor="White"
+                                    CornerRadius="8"
+                                    HeightRequest="45"/>
+                            
+                            <Button Grid.Column="1"
+                                    Text="İptal"
+                                    Command="{Binding DuzenlemeIptalCommand}"
+                                    BackgroundColor="{AppThemeBinding Light=#718096, Dark=#A0AEC0}"
+                                    TextColor="White"
+                                    CornerRadius="8"
+                                    HeightRequest="45"/>
+
+                            <Button Grid.Column="2"
+                                    Text="Temizle"
+                                    Command="{Binding YeniKullaniciCommand}"
+                                    BackgroundColor="{AppThemeBinding Light=#D69E2E, Dark=#F6E05E}"
+                                    TextColor="White"
+                                    CornerRadius="8"
+                                    HeightRequest="45"/>
+                        </Grid>
+                    </StackLayout>
+                </Frame>
+
+                <!-- Kullanıcı Listesi -->
+                <Frame BackgroundColor="{AppThemeBinding Light=#F8F9FA, Dark=#2D3748}"
+                       BorderColor="Transparent"
+                       CornerRadius="12"
+                       Padding="20">
+                    <StackLayout>
+                        <Label Text="Kayıtlı Kullanıcılar"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"
+                               Margin="0,0,0,15"/>
+
+                        <!-- Kullanıcı Yok Mesajı -->
+                        <Label Text="{Binding Metin}"
+                               FontSize="16"
+                               TextColor="{AppThemeBinding Light=#718096, Dark=#A0AEC0}"
+                               HorizontalOptions="Center"
+                               Margin="0,40"
+                               IsVisible="{Binding KullaniciYok}"/>
+
+                        <!-- Kullanıcılar CollectionView -->
+                        <CollectionView ItemsSource="{Binding Kullanicilar}"
+                                        IsVisible="{Binding KullaniciYok, Converter={StaticResource InvertedBoolConverter}}"
+                                        SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="model:Kullanici">
+                                    <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#4A5568}"
+                                           BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#718096}"
+                                           CornerRadius="12"
+                                           Padding="15"
+                                           Margin="0,0,0,10"
+                                           HasShadow="True">
+                                        <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto" RowSpacing="8" ColumnSpacing="10">
+                                            
+                                            <!-- Profil İkonu -->
+                                            <Frame Grid.Row="0" Grid.Column="0" Grid.RowSpan="3"
+                                                   BackgroundColor="{Binding ., Converter={StaticResource KullaniciDurumToColorConverter}}"
+                                                   WidthRequest="60"
+                                                   HeightRequest="60"
+                                                   CornerRadius="30"
+                                                   HasShadow="False"
+                                                   VerticalOptions="Center">
+                                                <Label Text="👤"
+                                                       FontSize="30"
+                                                       TextColor="White"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"/>
+                                            </Frame>
+
+                                            <!-- Kullanıcı Bilgileri -->
+                                            <StackLayout Grid.Row="0" Grid.Column="1" VerticalOptions="Center">
+                                                <StackLayout Orientation="Horizontal" Spacing="10">
+                                                    <Label Text="{Binding KullaniciAdi}"
+                                                           FontSize="18"
+                                                           FontAttributes="Bold"
+                                                           TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"/>
+                                                    
+                                                    <Frame BackgroundColor="{Binding ., Converter={StaticResource KullaniciDurumToColorConverter}}"
+                                                           Padding="6,3"
+                                                           CornerRadius="10"
+                                                           HasShadow="False">
+                                                        <Label Text="{Binding ., Converter={StaticResource KullaniciDurumToTextConverter}}"
+                                                               FontSize="10"
+                                                               TextColor="White"
+                                                               FontAttributes="Bold"/>
+                                                    </Frame>
+
+                                                    <Frame BackgroundColor="{AppThemeBinding Light=#805AD5, Dark=#B794F6}"
+                                                           Padding="6,3"
+                                                           CornerRadius="10"
+                                                           HasShadow="False"
+                                                           IsVisible="{Binding Yonetici}">
+                                                        <Label Text="Admin"
+                                                               FontSize="10"
+                                                               TextColor="White"
+                                                               FontAttributes="Bold"/>
+                                                    </Frame>
+                                                </StackLayout>
+                                            </StackLayout>
+
+                                            <StackLayout Grid.Row="1" Grid.Column="1">
+                                                <Label Text="{Binding TamAd}"
+                                                       FontSize="14"
+                                                       TextColor="{AppThemeBinding Light=#718096, Dark=#A0AEC0}"
+                                                       IsVisible="{Binding TamAd, Converter={StaticResource StringToBoolConverter}}"/>
+                                                
+                                                <Label Text="{Binding Email}"
+                                                       FontSize="14"
+                                                       TextColor="{AppThemeBinding Light=#718096, Dark=#A0AEC0}"
+                                                       IsVisible="{Binding Email, Converter={StaticResource StringToBoolConverter}}"/>
+                                            </StackLayout>
+
+                                            <StackLayout Grid.Row="2" Grid.Column="1">
+                                                <StackLayout Orientation="Horizontal" Spacing="15">
+                                                    <Label Text="{Binding HesapOlusturmaTarihi, StringFormat='Üyelik: {0:dd.MM.yyyy}'}"
+                                                           FontSize="12"
+                                                           TextColor="{AppThemeBinding Light=#4A5568, Dark=#CBD5E0}"/>
+                                                    
+                                                    <Label Text="{Binding SonGirisZamani, StringFormat='Son giriş: {0:dd.MM.yyyy}'}"
+                                                           FontSize="12"
+                                                           TextColor="{AppThemeBinding Light=#4A5568, Dark=#CBD5E0}"
+                                                           IsVisible="{Binding SonGirisZamani, Converter={StaticResource NullableDateTimeToBoolConverter}}"/>
+                                                </StackLayout>
+
+                                                <Label Text="{Binding BasarisizGirisSayisi, StringFormat='Başarısız giriş: {0}'}"
+                                                       FontSize="12"
+                                                       TextColor="{AppThemeBinding Light=#E53E3E, Dark=#F56565}"
+                                                       IsVisible="{Binding BasarisizGirisSayisi, Converter={StaticResource IntToBoolConverter}}"/>
+                                            </StackLayout>
+
+                                            <!-- Düzenle Butonu -->
+                                            <Button Grid.Row="0" Grid.Column="2"
+                                                    Text="✏️"
+                                                    BackgroundColor="{AppThemeBinding Light=#3182CE, Dark=#4299E1}"
+                                                    TextColor="White"
+                                                    CornerRadius="20"
+                                                    WidthRequest="40"
+                                                    HeightRequest="40"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:KullaniciYonetimVM}}, Path=KullaniciDuzenleCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    VerticalOptions="Center"/>
+
+                                            <!-- Kilit/Kilit Açma Butonu -->
+                                            <Button Grid.Row="1" Grid.Column="2"
+                                                    Text="{Binding HesapKilitli, Converter={StaticResource BoolToTextConverter}, ConverterParameter='🔓|🔒'}"
+                                                    BackgroundColor="{Binding HesapKilitli, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#38A169|#E53E3E'}"
+                                                    TextColor="White"
+                                                    CornerRadius="20"
+                                                    WidthRequest="40"
+                                                    HeightRequest="40"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:KullaniciYonetimVM}}, Path=HesapKilitToggleCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    VerticalOptions="Center"/>
+
+                                            <!-- Şifre Sıfırlama Butonu -->
+                                            <Button Grid.Row="0" Grid.Column="3"
+                                                    Text="🔑"
+                                                    BackgroundColor="{AppThemeBinding Light=#D69E2E, Dark=#F6E05E}"
+                                                    TextColor="White"
+                                                    CornerRadius="20"
+                                                    WidthRequest="40"
+                                                    HeightRequest="40"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:KullaniciYonetimVM}}, Path=SifreSifirlaCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    VerticalOptions="Center"/>
+
+                                            <!-- Sil Butonu -->
+                                            <Button Grid.Row="1" Grid.Column="3"
+                                                    Text="🗑️"
+                                                    BackgroundColor="{AppThemeBinding Light=#E53E3E, Dark=#F56565}"
+                                                    TextColor="White"
+                                                    CornerRadius="20"
+                                                    WidthRequest="40"
+                                                    HeightRequest="40"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:KullaniciYonetimVM}}, Path=KullaniciSilCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    VerticalOptions="Center"/>
+                                        </Grid>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </StackLayout>
+                </Frame>
+            </StackLayout>
+        </ScrollView>
+
+        <!-- Yükleme Göstergesi -->
+        <ActivityIndicator IsVisible="{Binding Yuklenme}"
+                           IsRunning="{Binding Yuklenme}"
+                           Color="{AppThemeBinding Light=#3182CE, Dark=#4299E1}"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Center"/>
+    </Grid>
+</ContentPage> 

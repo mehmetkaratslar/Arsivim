@@ -41,5 +41,19 @@ namespace Arsivim.Data.Repositories
             return await _context.KisiBelgeler
                 .CountAsync(kb => kb.KisiID == kisiId);
         }
+
+        public async Task<IEnumerable<Kisi>> TumunuGetirAsync()
+        {
+            return await _dbSet.OrderBy(k => k.Ad).ThenBy(k => k.Soyad).ToListAsync();
+        }
+
+        public async Task SilAsync(int id)
+        {
+            var kisi = await GetByIdAsync(id);
+            if (kisi != null)
+            {
+                await DeleteAsync(kisi);
+            }
+        }
     }
 } 

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="Arsivim.Views.AnaSayfa"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Arsivim.ViewModels"
+             xmlns:models="clr-namespace:Arsivim.Core.Models;assembly=Arsivim.Core"
+             Title="{Binding Title}"
+             x:DataType="viewmodels:AnaSayfaVM">
+
+    <ScrollView>
+        <Grid Padding="20" RowSpacing="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Hoşgeldiniz Mesajı -->
+            <Frame Grid.Row="0" 
+                   BackgroundColor="LightBlue" 
+                   Padding="15" 
+                   CornerRadius="10"
+                   HasShadow="True">
+                <Label Text="{Binding HosgeldinizMesaji}" 
+                       FontSize="18" 
+                       FontAttributes="Bold"
+                       TextColor="DarkBlue"
+                       HorizontalTextAlignment="Center" />
+            </Frame>
+
+            <!-- Hızlı İstatistikler -->
+            <Grid Grid.Row="1" ColumnSpacing="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Frame Grid.Column="0" 
+                       BackgroundColor="LightGreen" 
+                       Padding="15" 
+                       CornerRadius="10"
+                       HasShadow="True">
+                    <StackLayout>
+                        <Label Text="Toplam Belge" 
+                               FontSize="14" 
+                               TextColor="DarkGreen"
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="{Binding ToplamBelgeSayisi}" 
+                               FontSize="24" 
+                               FontAttributes="Bold"
+                               TextColor="DarkGreen"
+                               HorizontalTextAlignment="Center" />
+                    </StackLayout>
+                </Frame>
+
+                <Frame Grid.Column="1" 
+                       BackgroundColor="LightCoral" 
+                       Padding="15" 
+                       CornerRadius="10"
+                       HasShadow="True">
+                    <StackLayout>
+                        <Label Text="Toplam Boyut" 
+                               FontSize="14" 
+                               TextColor="DarkRed"
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="{Binding ToplamDosyaBoyutuMetni}" 
+                               FontSize="16" 
+                               FontAttributes="Bold"
+                               TextColor="DarkRed"
+                               HorizontalTextAlignment="Center" />
+                    </StackLayout>
+                </Frame>
+            </Grid>
+
+            <!-- Hızlı Erişim Butonları -->
+            <Grid Grid.Row="2" RowSpacing="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- İlk Satır Butonları -->
+                <Grid Grid.Row="0" ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0"
+                            Text="Belge Ekle"
+                            FontSize="16"
+                            BackgroundColor="Blue"
+                            TextColor="White"
+                            CornerRadius="5"
+                            Command="{Binding BelgeEkleCommand}" />
+
+                    <Button Grid.Column="1"
+                            Text="Yenile"
+                            FontSize="16"
+                            BackgroundColor="Orange"
+                            TextColor="White"
+                            CornerRadius="5"
+                            Command="{Binding YenileCommand}" />
+                </Grid>
+
+                <!-- Yeni Arayüzler için Hızlı Erişim -->
+                <Grid Grid.Row="1" ColumnSpacing="5" RowSpacing="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0"
+                            Text="🏷️ Etiketler"
+                            FontSize="12"
+                            BackgroundColor="#D69E2E"
+                            TextColor="White"
+                            CornerRadius="5"
+                            Command="{Binding EtiketlerCommand}" />
+
+                    <Button Grid.Column="1"
+                            Text="📊 İstatistik"
+                            FontSize="12"
+                            BackgroundColor="#3182CE"
+                            TextColor="White"
+                            CornerRadius="5"
+                            Command="{Binding IstatistiklerCommand}" />
+
+                    <Button Grid.Column="2"
+                            Text="📋 Geçmiş"
+                            FontSize="12"
+                            BackgroundColor="#805AD5"
+                            TextColor="White"
+                            CornerRadius="5"
+                            Command="{Binding GecmisCommand}" />
+
+                    <Button Grid.Column="3"
+                            Text="👥 Kullanıcı"
+                            FontSize="12"
+                            BackgroundColor="#38A169"
+                            TextColor="White"
+                            CornerRadius="5"
+                            Command="{Binding KullanicilarCommand}" />
+                </Grid>
+            </Grid>
+
+            <!-- Son Belgeler -->
+            <StackLayout Grid.Row="3" Spacing="10">
+                <Label Text="Son Eklenen Belgeler" 
+                       FontSize="18" 
+                       FontAttributes="Bold"
+                       TextColor="Black" />
+                
+                <CollectionView ItemsSource="{Binding SonBelgeler}"
+                                SelectionMode="Single">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Belge">
+                            <Grid Padding="10" BackgroundColor="White">
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AnaSayfaVM}}, Path=BelgeAcCommand}"
+                                                          CommandParameter="{Binding .}" />
+                                </Grid.GestureRecognizers>
+                                
+                                <Frame BackgroundColor="LightGray" 
+                                       Padding="10" 
+                                       CornerRadius="5"
+                                       HasShadow="True">
+                                    <StackLayout>
+                                        <Label Text="Örnek Belge" 
+                                               FontSize="16" 
+                                               FontAttributes="Bold"
+                                               TextColor="Black" />
+                                        <Label Text="{Binding YuklemeTarihi, StringFormat='{0:dd.MM.yyyy HH:mm}'}" 
+                                               FontSize="12" 
+                                               TextColor="Gray" />
+                                        <Label Text="{Binding BelgeTipi}" 
+                                               FontSize="12" 
+                                               TextColor="Blue" />
+                                    </StackLayout>
+                                </Frame>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </StackLayout>
+
+            <!-- Loading Indicator -->
+            <ActivityIndicator Grid.Row="4"
+                              IsVisible="{Binding IsBusy}"
+                              IsRunning="{Binding IsBusy}"
+                              Color="Blue"
+                              VerticalOptions="Center"
+                              HorizontalOptions="Center" />
+
+        </Grid>
+    </ScrollView>
+</ContentPage> 

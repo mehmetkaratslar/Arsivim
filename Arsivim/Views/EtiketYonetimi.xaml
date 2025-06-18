@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="Arsivim.Views.EtiketYonetimi"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Arsivim.ViewModels"
+             xmlns:model="clr-namespace:Arsivim.Core.Models;assembly=Arsivim.Core"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:DataType="vm:EtiketYonetimVM"
+             Title="{Binding Title}">
+    
+    <Grid>
+        <ScrollView IsVisible="{Binding Yuklenme, Converter={StaticResource InvertedBoolConverter}}">
+            <StackLayout Padding="20">
+                
+                <!-- Başlık ve Arama Bölümü -->
+                <Frame BackgroundColor="{AppThemeBinding Light=#F8F9FA, Dark=#2D3748}"
+                       BorderColor="Transparent"
+                       CornerRadius="12"
+                       Padding="20"
+                       Margin="0,0,0,20">
+                    <StackLayout>
+                        <Label Text="Etiket Yönetimi"
+                               FontSize="28"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"
+                               HorizontalOptions="Center"
+                               Margin="0,0,0,20"/>
+                        
+                        <!-- Arama Kutusu -->
+                        <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#4A5568}"
+                               BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#718096}"
+                               CornerRadius="8"
+                               Padding="0"
+                               HasShadow="False">
+                            <Entry Text="{Binding AramaMetni}"
+                                   Placeholder="Etiket ara..."
+                                   FontSize="16"
+                                   Margin="15,12"
+                                   BackgroundColor="Transparent"
+                                   TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}">
+                                <Entry.Behaviors>
+                                    <toolkit:EventToCommandBehavior EventName="TextChanged" Command="{Binding AraCommand}" />
+                                </Entry.Behaviors>
+                            </Entry>
+                        </Frame>
+                    </StackLayout>
+                </Frame>
+
+                <!-- Etiket Ekleme/Düzenleme Formu -->
+                <Frame BackgroundColor="{AppThemeBinding Light=#F8F9FA, Dark=#2D3748}"
+                       BorderColor="Transparent"
+                       CornerRadius="12"
+                       Padding="20"
+                       Margin="0,0,0,20">
+                    <StackLayout>
+                        <Label Text="{Binding DuzenlemeModu, Converter={StaticResource BoolToTextConverter}, ConverterParameter='Etiket Düzenle|Yeni Etiket Ekle'}"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"
+                               Margin="0,0,0,15"/>
+
+                        <!-- Etiket Adı -->
+                        <Label Text="Etiket Adı *"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#4A5568, Dark=#A0AEC0}"
+                               Margin="0,0,0,5"/>
+                        <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#4A5568}"
+                               BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#718096}"
+                               CornerRadius="8"
+                               Padding="0"
+                               HasShadow="False"
+                               Margin="0,0,0,15">
+                            <Entry Text="{Binding YeniEtiketAdi}"
+                                   Placeholder="Etiket adını giriniz"
+                                   FontSize="16"
+                                   Margin="15,12"
+                                   BackgroundColor="Transparent"
+                                   TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"/>
+                        </Frame>
+
+                        <!-- Renk Seçimi -->
+                        <Label Text="Renk"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#4A5568, Dark=#A0AEC0}"
+                               Margin="0,0,0,5"/>
+                        <StackLayout Orientation="Horizontal" Spacing="10" Margin="0,0,0,15">
+                            <Frame BackgroundColor="{Binding YeniEtiketRenk}"
+                                   WidthRequest="40"
+                                   HeightRequest="40"
+                                   CornerRadius="20"
+                                   HasShadow="True"
+                                   BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#718096}"/>
+                            
+                            <StackLayout Orientation="Horizontal" Spacing="5" HorizontalOptions="FillAndExpand">
+                                <Button Text="🔴" BackgroundColor="#E53E3E" Command="{Binding RenkSecCommand}" CommandParameter="#E53E3E" WidthRequest="40" HeightRequest="40" CornerRadius="20"/>
+                                <Button Text="🟠" BackgroundColor="#DD6B20" Command="{Binding RenkSecCommand}" CommandParameter="#DD6B20" WidthRequest="40" HeightRequest="40" CornerRadius="20"/>
+                                <Button Text="🟡" BackgroundColor="#D69E2E" Command="{Binding RenkSecCommand}" CommandParameter="#D69E2E" WidthRequest="40" HeightRequest="40" CornerRadius="20"/>
+                                <Button Text="🟢" BackgroundColor="#38A169" Command="{Binding RenkSecCommand}" CommandParameter="#38A169" WidthRequest="40" HeightRequest="40" CornerRadius="20"/>
+                                <Button Text="🔵" BackgroundColor="#3182CE" Command="{Binding RenkSecCommand}" CommandParameter="#3182CE" WidthRequest="40" HeightRequest="40" CornerRadius="20"/>
+                                <Button Text="🟣" BackgroundColor="#805AD5" Command="{Binding RenkSecCommand}" CommandParameter="#805AD5" WidthRequest="40" HeightRequest="40" CornerRadius="20"/>
+                            </StackLayout>
+                        </StackLayout>
+
+                        <!-- Açıklama -->
+                        <Label Text="Açıklama"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#4A5568, Dark=#A0AEC0}"
+                               Margin="0,0,0,5"/>
+                        <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#4A5568}"
+                               BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#718096}"
+                               CornerRadius="8"
+                               Padding="0"
+                               HasShadow="False"
+                               Margin="0,0,0,20">
+                            <Editor Text="{Binding YeniEtiketAciklama}"
+                                    Placeholder="Etiket açıklaması (opsiyonel)"
+                                    FontSize="16"
+                                    HeightRequest="80"
+                                    Margin="15,12"
+                                    BackgroundColor="Transparent"
+                                    TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"/>
+                        </Frame>
+
+                        <!-- Butonlar -->
+                        <StackLayout Orientation="Horizontal" Spacing="10" HorizontalOptions="FillAndExpand">
+                            <Button Text="{Binding DuzenlemeModu, Converter={StaticResource BoolToTextConverter}, ConverterParameter='Güncelle|Ekle'}"
+                                    Command="{Binding DuzenlemeModu, Converter={StaticResource BoolToCommandConverter}, ConverterParameter='{Binding EtiketKaydetCommand}|{Binding EtiketEkleCommand}'}"
+                                    BackgroundColor="{AppThemeBinding Light=#3182CE, Dark=#4299E1}"
+                                    TextColor="White"
+                                    CornerRadius="8"
+                                    HeightRequest="45"
+                                    HorizontalOptions="FillAndExpand"/>
+                            
+                            <Button Text="İptal"
+                                    Command="{Binding DuzenlemeIptalCommand}"
+                                    BackgroundColor="{AppThemeBinding Light=#718096, Dark=#A0AEC0}"
+                                    TextColor="White"
+                                    CornerRadius="8"
+                                    HeightRequest="45"
+                                    HorizontalOptions="FillAndExpand"
+                                    IsVisible="{Binding DuzenlemeModu}"/>
+                        </StackLayout>
+                    </StackLayout>
+                </Frame>
+
+                <!-- Etiket Listesi -->
+                <Frame BackgroundColor="{AppThemeBinding Light=#F8F9FA, Dark=#2D3748}"
+                       BorderColor="Transparent"
+                       CornerRadius="12"
+                       Padding="20">
+                    <StackLayout>
+                        <Label Text="Mevcut Etiketler"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"
+                               Margin="0,0,0,15"/>
+
+                        <!-- Etiket Yok Mesajı -->
+                        <Label Text="{Binding Metin}"
+                               FontSize="16"
+                               TextColor="{AppThemeBinding Light=#718096, Dark=#A0AEC0}"
+                               HorizontalOptions="Center"
+                               Margin="0,40"
+                               IsVisible="{Binding EtiketYok}"/>
+
+                        <!-- Etiketler CollectionView -->
+                        <CollectionView ItemsSource="{Binding Etiketler}"
+                                        IsVisible="{Binding EtiketYok, Converter={StaticResource InvertedBoolConverter}}"
+                                        SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="model:Etiket">
+                                    <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#4A5568}"
+                                           BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#718096}"
+                                           CornerRadius="12"
+                                           Padding="15"
+                                           Margin="0,0,0,10"
+                                           HasShadow="True">
+                                        <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="15">
+                                            
+                                            <!-- Renk Göstergesi -->
+                                            <Frame Grid.Column="0"
+                                                   BackgroundColor="{Binding Renk}"
+                                                   WidthRequest="25"
+                                                   HeightRequest="25"
+                                                   CornerRadius="12"
+                                                   HasShadow="False"
+                                                   VerticalOptions="Center"/>
+
+                                            <!-- Etiket Bilgileri -->
+                                            <StackLayout Grid.Column="1" VerticalOptions="Center">
+                                                <Label Text="{Binding EtiketAdi}"
+                                                       FontSize="18"
+                                                       FontAttributes="Bold"
+                                                       TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"/>
+                                                
+                                                <Label Text="{Binding Aciklama}"
+                                                       FontSize="14"
+                                                       TextColor="{AppThemeBinding Light=#718096, Dark=#A0AEC0}"
+                                                       IsVisible="{Binding Aciklama, Converter={StaticResource StringToBoolConverter}}"/>
+                                                
+                                                <StackLayout Orientation="Horizontal" Spacing="15">
+                                                    <Label Text="{Binding KullanimSayisi, StringFormat='Kullanım: {0}'}"
+                                                           FontSize="12"
+                                                           TextColor="{AppThemeBinding Light=#4A5568, Dark=#CBD5E0}"/>
+                                                    
+                                                    <Label Text="{Binding OlusturulmaTarihi, StringFormat='Oluşturulma: {0:dd.MM.yyyy}'}"
+                                                           FontSize="12"
+                                                           TextColor="{AppThemeBinding Light=#4A5568, Dark=#CBD5E0}"/>
+                                                </StackLayout>
+                                            </StackLayout>
+
+                                            <!-- Düzenle Butonu -->
+                                            <Button Grid.Column="2"
+                                                    Text="✏️"
+                                                    BackgroundColor="{AppThemeBinding Light=#3182CE, Dark=#4299E1}"
+                                                    TextColor="White"
+                                                    CornerRadius="20"
+                                                    WidthRequest="40"
+                                                    HeightRequest="40"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EtiketYonetimVM}}, Path=EtiketDuzenleCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    VerticalOptions="Center"/>
+
+                                            <!-- Sil Butonu -->
+                                            <Button Grid.Column="3"
+                                                    Text="🗑️"
+                                                    BackgroundColor="{AppThemeBinding Light=#E53E3E, Dark=#F56565}"
+                                                    TextColor="White"
+                                                    CornerRadius="20"
+                                                    WidthRequest="40"
+                                                    HeightRequest="40"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EtiketYonetimVM}}, Path=EtiketSilCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    VerticalOptions="Center"/>
+                                        </Grid>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </StackLayout>
+                </Frame>
+            </StackLayout>
+        </ScrollView>
+
+        <!-- Yükleme Göstergesi -->
+        <ActivityIndicator IsVisible="{Binding Yuklenme}"
+                           IsRunning="{Binding Yuklenme}"
+                           Color="{AppThemeBinding Light=#3182CE, Dark=#4299E1}"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Center"/>
+    </Grid>
+</ContentPage> 

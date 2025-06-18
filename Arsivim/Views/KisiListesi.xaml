@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="Arsivim.Views.KisiListesi"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Arsivim.ViewModels"
+             xmlns:models="clr-namespace:Arsivim.Core.Models;assembly=Arsivim.Core"
+             Title="{Binding Title}"
+             x:DataType="viewmodels:KisiListeVM">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Ekle" 
+                     IconImageSource="add.png" 
+                     Command="{Binding KisiEkleCommand}" />
+        <ToolbarItem Text="Yenile" 
+                     IconImageSource="refresh.png" 
+                     Command="{Binding YenileCommand}" />
+    </ContentPage.ToolbarItems>
+
+    <Grid RowSpacing="10" Padding="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Arama Bölümü -->
+        <Frame Grid.Row="0" BackgroundColor="White" Padding="10" CornerRadius="5" HasShadow="True">
+            <Grid ColumnSpacing="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Entry Grid.Column="0" 
+                       Text="{Binding AramaMetni}" 
+                       Placeholder="Kişilerde ara..."
+                       ReturnType="Search"
+                       ReturnCommand="{Binding AraCommand}" />
+
+                <Button Grid.Column="1" 
+                        Text="Ara" 
+                        Command="{Binding AraCommand}"
+                        BackgroundColor="Blue"
+                        TextColor="White"
+                        CornerRadius="5" />
+            </Grid>
+        </Frame>
+
+        <!-- İstatistik Bilgisi -->
+        <Frame Grid.Row="1" 
+               BackgroundColor="LightGreen" 
+               Padding="10" 
+               CornerRadius="5"
+               HasShadow="True">
+            <Label Text="{Binding ToplamKisiSayisiMetni}" 
+                   FontSize="16" 
+                   FontAttributes="Bold"
+                   TextColor="DarkGreen"
+                   HorizontalTextAlignment="Center" />
+        </Frame>
+
+        <!-- Kişi Listesi -->
+        <CollectionView Grid.Row="2" 
+                        ItemsSource="{Binding Kisiler}"
+                        SelectionMode="Single"
+                        SelectedItem="{Binding SeciliKisi}">
+            
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Kisi">
+                    <Grid Padding="5">
+                        <Frame BackgroundColor="White" 
+                               Padding="15" 
+                               CornerRadius="10"
+                               HasShadow="True">
+                            
+                            <Grid ColumnSpacing="15">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:KisiListeVM}}, Path=KisiSecCommand}"
+                                                          CommandParameter="{Binding .}" />
+                                </Grid.GestureRecognizers>
+
+                                <!-- Kişi İkonu -->
+                                <Frame Grid.Column="0"
+                                       BackgroundColor="LightBlue"
+                                       Padding="8"
+                                       CornerRadius="25"
+                                       HasShadow="False"
+                                       WidthRequest="50"
+                                       HeightRequest="50">
+                                    <Label Text="👤" 
+                                           FontSize="20"
+                                           TextColor="DarkBlue"
+                                           HorizontalTextAlignment="Center"
+                                           VerticalTextAlignment="Center" />
+                                </Frame>
+
+                                <!-- Kişi Bilgileri -->
+                                <StackLayout Grid.Column="1" Spacing="5">
+                                    <Label Text="{Binding TamAd}" 
+                                           FontSize="16" 
+                                           FontAttributes="Bold"
+                                           TextColor="Black"
+                                           LineBreakMode="TailTruncation" />
+                                    
+                                                                         <Label Text="{Binding Cinsiyet}" 
+                                            FontSize="12" 
+                                            TextColor="Gray"
+                                            IsVisible="{Binding Cinsiyet, Converter={StaticResource StringNotNullOrEmptyConverter}}" />
+                                    
+                                    <Label Text="{Binding Email}" 
+                                           FontSize="12" 
+                                           TextColor="Blue"
+                                           LineBreakMode="TailTruncation"
+                                           IsVisible="{Binding Email, Converter={StaticResource StringNotNullOrEmptyConverter}}" />
+                                    
+                                    <Label Text="{Binding Telefon}" 
+                                           FontSize="12" 
+                                           TextColor="Green"
+                                           IsVisible="{Binding Telefon, Converter={StaticResource StringNotNullOrEmptyConverter}}" />
+                                </StackLayout>
+
+                                <!-- Aksiyon Butonları -->
+                                <StackLayout Grid.Column="2" Spacing="5">
+                                    <Button Text="🗑️" 
+                                            FontSize="16"
+                                            BackgroundColor="Red"
+                                            TextColor="White"
+                                            CornerRadius="15"
+                                            WidthRequest="40"
+                                            HeightRequest="40"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:KisiListeVM}}, Path=KisiSilCommand}"
+                                            CommandParameter="{Binding .}" />
+                                </StackLayout>
+                            </Grid>
+                        </Frame>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+            <CollectionView.EmptyView>
+                <StackLayout Padding="50" VerticalOptions="Center">
+                    <Label Text="Henüz kişi bulunmuyor" 
+                           FontSize="18" 
+                           TextColor="Gray"
+                           HorizontalTextAlignment="Center" />
+                    <Label Text="Yeni kişi eklemek için + butonuna tıklayın" 
+                           FontSize="14" 
+                           TextColor="Gray"
+                           HorizontalTextAlignment="Center"
+                           Margin="0,10,0,0" />
+                </StackLayout>
+            </CollectionView.EmptyView>
+        </CollectionView>
+
+        <!-- Loading Indicator -->
+        <ActivityIndicator Grid.Row="2"
+                          IsVisible="{Binding IsBusy}"
+                          IsRunning="{Binding IsBusy}"
+                          Color="Blue"
+                          VerticalOptions="Center"
+                          HorizontalOptions="Center" />
+
+    </Grid>
+</ContentPage> 

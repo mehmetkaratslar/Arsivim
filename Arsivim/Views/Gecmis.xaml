@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="Arsivim.Views.Gecmis"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Arsivim.ViewModels"
+             xmlns:model="clr-namespace:Arsivim.Core.Models;assembly=Arsivim.Core"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:DataType="vm:GecmisVM"
+             Title="{Binding Title}">
+    
+    <Grid>
+        <ScrollView IsVisible="{Binding Yuklenme, Converter={StaticResource InvertedBoolConverter}}">
+            <StackLayout Padding="20">
+                
+                <!-- Başlık ve Kontroller -->
+                <Frame BackgroundColor="{AppThemeBinding Light=#F8F9FA, Dark=#2D3748}"
+                       BorderColor="Transparent"
+                       CornerRadius="12"
+                       Padding="20"
+                       Margin="0,0,0,20">
+                    <StackLayout>
+                        <Label Text="İşlem Geçmişi"
+                               FontSize="28"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"
+                               HorizontalOptions="Center"
+                               Margin="0,0,0,20"/>
+                        
+                        <!-- Arama ve Filtre Butonları -->
+                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+                            <!-- Arama Kutusu -->
+                            <Frame Grid.Column="0"
+                                   BackgroundColor="{AppThemeBinding Light=White, Dark=#4A5568}"
+                                   BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#718096}"
+                                   CornerRadius="8"
+                                   Padding="0"
+                                   HasShadow="False">
+                                <Entry Text="{Binding AramaMetni}"
+                                       Placeholder="Kullanıcı, işlem türü veya açıklama ara..."
+                                       FontSize="16"
+                                       Margin="15,12"
+                                       BackgroundColor="Transparent"
+                                       TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}">
+                                                                    <Entry.Behaviors>
+                                    <toolkit:EventToCommandBehavior EventName="TextChanged" Command="{Binding AraCommand}" />
+                                </Entry.Behaviors>
+                                </Entry>
+                            </Frame>
+
+                            <!-- Filtre Butonu -->
+                            <Button Grid.Column="1"
+                                    Text="🔧"
+                                    BackgroundColor="{AppThemeBinding Light=#3182CE, Dark=#4299E1}"
+                                    TextColor="White"
+                                    CornerRadius="8"
+                                    WidthRequest="50"
+                                    HeightRequest="45"
+                                    Command="{Binding FiltreToggleCommand}"/>
+
+                            <!-- Temizle Butonu -->
+                            <Button Grid.Column="2"
+                                    Text="🗑️"
+                                    BackgroundColor="{AppThemeBinding Light=#E53E3E, Dark=#F56565}"
+                                    TextColor="White"
+                                    CornerRadius="8"
+                                    WidthRequest="50"
+                                    HeightRequest="45"
+                                    Command="{Binding TumGecmisiSilCommand}"/>
+                        </Grid>
+                    </StackLayout>
+                </Frame>
+
+                <!-- Filtre Paneli -->
+                <Frame IsVisible="{Binding FiltreAcik}"
+                       BackgroundColor="{AppThemeBinding Light=#F8F9FA, Dark=#2D3748}"
+                       BorderColor="Transparent"
+                       CornerRadius="12"
+                       Padding="20"
+                       Margin="0,0,0,20">
+                    <StackLayout>
+                        <Label Text="Filtre Seçenekleri"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"
+                               Margin="0,0,0,15"/>
+
+                        <!-- İşlem Türü Filtresi -->
+                        <Label Text="İşlem Türü"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#4A5568, Dark=#A0AEC0}"
+                               Margin="0,0,0,5"/>
+                        <Picker ItemsSource="{Binding IslemTurleri}"
+                                SelectedItem="{Binding SeciliIslemTuru}"
+                                BackgroundColor="{AppThemeBinding Light=White, Dark=#4A5568}"
+                                TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"
+                                Margin="0,0,0,15"/>
+
+                        <!-- Tarih Aralığı -->
+                        <Label Text="Tarih Aralığı"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#4A5568, Dark=#A0AEC0}"
+                               Margin="0,0,0,5"/>
+                        
+                        <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="10" Margin="0,0,0,20">
+                            <DatePicker Grid.Column="0"
+                                        Date="{Binding BaslangicTarihi}"
+                                        BackgroundColor="{AppThemeBinding Light=White, Dark=#4A5568}"
+                                        TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"/>
+                            
+                            <Label Grid.Column="1"
+                                   Text="-"
+                                   VerticalOptions="Center"
+                                   FontSize="18"
+                                   TextColor="{AppThemeBinding Light=#4A5568, Dark=#A0AEC0}"/>
+                            
+                            <DatePicker Grid.Column="2"
+                                        Date="{Binding BitisTarihi}"
+                                        BackgroundColor="{AppThemeBinding Light=White, Dark=#4A5568}"
+                                        TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"/>
+                        </Grid>
+
+                        <!-- Filtre Butonları -->
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <Button Grid.Column="0"
+                                    Text="Filtreyi Uygula"
+                                    Command="{Binding FiltreUygulaCommand}"
+                                    BackgroundColor="{AppThemeBinding Light=#3182CE, Dark=#4299E1}"
+                                    TextColor="White"
+                                    CornerRadius="8"
+                                    HeightRequest="45"/>
+                            
+                            <Button Grid.Column="1"
+                                    Text="Sıfırla"
+                                    Command="{Binding FiltreSifirlaCommand}"
+                                    BackgroundColor="{AppThemeBinding Light=#718096, Dark=#A0AEC0}"
+                                    TextColor="White"
+                                    CornerRadius="8"
+                                    HeightRequest="45"/>
+                        </Grid>
+                    </StackLayout>
+                </Frame>
+
+                <!-- Geçmiş Listesi -->
+                <Frame BackgroundColor="{AppThemeBinding Light=#F8F9FA, Dark=#2D3748}"
+                       BorderColor="Transparent"
+                       CornerRadius="12"
+                       Padding="20">
+                    <StackLayout>
+                        <Label Text="İşlem Kayıtları"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"
+                               Margin="0,0,0,15"/>
+
+                        <!-- Geçmiş Yok Mesajı -->
+                        <Label Text="{Binding Metin}"
+                               FontSize="16"
+                               TextColor="{AppThemeBinding Light=#718096, Dark=#A0AEC0}"
+                               HorizontalOptions="Center"
+                               Margin="0,40"
+                               IsVisible="{Binding GecmisYok}"/>
+
+                        <!-- Geçmiş CollectionView -->
+                        <CollectionView ItemsSource="{Binding GecmisListesi}"
+                                        IsVisible="{Binding GecmisYok, Converter={StaticResource InvertedBoolConverter}}"
+                                        SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="model:Gecmis">
+                                    <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#4A5568}"
+                                           BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#718096}"
+                                           CornerRadius="12"
+                                           Padding="15"
+                                           Margin="0,0,0,10"
+                                           HasShadow="True">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="15">
+                                            
+                                            <!-- İşlem İkonu ve Renk -->
+                                            <Frame Grid.Column="0"
+                                                   BackgroundColor="{Binding IslemTuru, Converter={StaticResource IslemTuruToColorConverter}}"
+                                                   WidthRequest="50"
+                                                   HeightRequest="50"
+                                                   CornerRadius="25"
+                                                   HasShadow="False"
+                                                   VerticalOptions="Center">
+                                                <Label Text="{Binding IslemTuru, Converter={StaticResource IslemTuruToIconConverter}}"
+                                                       FontSize="20"
+                                                       TextColor="White"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"/>
+                                            </Frame>
+
+                                            <!-- İşlem Bilgileri -->
+                                            <StackLayout Grid.Column="1" VerticalOptions="Center">
+                                                <Label Text="{Binding IslemTuru}"
+                                                       FontSize="18"
+                                                       FontAttributes="Bold"
+                                                       TextColor="{AppThemeBinding Light=#2D3748, Dark=#F7FAFC}"/>
+                                                
+                                                <Label Text="{Binding Aciklama}"
+                                                       FontSize="14"
+                                                       TextColor="{AppThemeBinding Light=#718096, Dark=#A0AEC0}"
+                                                       IsVisible="{Binding Aciklama, Converter={StaticResource StringToBoolConverter}}"
+                                                       LineBreakMode="TailTruncation"
+                                                       MaxLines="2"/>
+                                                
+                                                <StackLayout Orientation="Horizontal" Spacing="15">
+                                                    <Label Text="{Binding Kullanici, StringFormat='👤 {0}'}"
+                                                           FontSize="12"
+                                                           TextColor="{AppThemeBinding Light=#4A5568, Dark=#CBD5E0}"
+                                                           IsVisible="{Binding Kullanici, Converter={StaticResource StringToBoolConverter}}"/>
+                                                    
+                                                    <Label Text="{Binding Zaman, StringFormat='🕒 {0:dd.MM.yyyy HH:mm}'}"
+                                                           FontSize="12"
+                                                           TextColor="{AppThemeBinding Light=#4A5568, Dark=#CBD5E0}"/>
+                                                </StackLayout>
+
+                                                <!-- Durum Göstergesi -->
+                                                <Frame BackgroundColor="{Binding Durum, Converter={StaticResource DurumToColorConverter}}"
+                                                       Padding="8,4"
+                                                       CornerRadius="12"
+                                                       HasShadow="False"
+                                                       HorizontalOptions="Start"
+                                                       Margin="0,5,0,0">
+                                                    <Label Text="{Binding Durum}"
+                                                           FontSize="10"
+                                                           TextColor="White"
+                                                           FontAttributes="Bold"/>
+                                                </Frame>
+                                            </StackLayout>
+
+                                            <!-- Detay Butonu -->
+                                            <Button Grid.Column="2"
+                                                    Text="ℹ️"
+                                                    BackgroundColor="{AppThemeBinding Light=#3182CE, Dark=#4299E1}"
+                                                    TextColor="White"
+                                                    CornerRadius="20"
+                                                    WidthRequest="40"
+                                                    HeightRequest="40"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GecmisVM}}, Path=DetayGosterCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    VerticalOptions="Center"/>
+                                        </Grid>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </StackLayout>
+                </Frame>
+            </StackLayout>
+        </ScrollView>
+
+        <!-- Yükleme Göstergesi -->
+        <ActivityIndicator IsVisible="{Binding Yuklenme}"
+                           IsRunning="{Binding Yuklenme}"
+                           Color="{AppThemeBinding Light=#3182CE, Dark=#4299E1}"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Center"/>
+    </Grid>
+</ContentPage> 

@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="Arsivim.Views.BelgeDetay"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Arsivim.ViewModels"
+             xmlns:models="clr-namespace:Arsivim.Core.Models;assembly=Arsivim.Core"
+             Title="{Binding Title}"
+             x:DataType="viewmodels:BelgeDetayVM">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Düzenle" 
+                     IconImageSource="edit.png" 
+                     Command="{Binding BelgeDuzenleCommand}" />
+        <ToolbarItem Text="Sil" 
+                     IconImageSource="delete.png" 
+                     Command="{Binding BelgeSilCommand}" />
+        <ToolbarItem Text="Paylaş" 
+                     IconImageSource="share.png" 
+                     Command="{Binding BelgePaylas}" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView>
+        <StackLayout Spacing="20" Padding="20">
+
+            <!-- Belge Bilgileri -->
+            <Frame BackgroundColor="White" Padding="20" CornerRadius="10" HasShadow="True">
+                <StackLayout Spacing="15">
+                    
+                    <!-- Belge Başlığı ve Favori -->
+                    <Grid ColumnSpacing="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0"
+                               Text="{Binding BelgeAdi}" 
+                               FontSize="20" 
+                               FontAttributes="Bold"
+                               TextColor="Black"
+                               VerticalOptions="Center" />
+
+                        <Button Grid.Column="1"
+                                Text="{Binding Favorimi, Converter={StaticResource BoolToFavoriteTextConverter}}"
+                                FontSize="18"
+                                BackgroundColor="Transparent"
+                                TextColor="{Binding Favorimi, Converter={StaticResource BoolToFavoriteColorConverter}}"
+                                Command="{Binding FavoriyeEkleCommand}" />
+                    </Grid>
+
+                    <!-- Belge Metaverisi -->
+                    <Grid ColumnSpacing="20" RowSpacing="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Label Grid.Row="0" Grid.Column="0" Text="Tip:" FontAttributes="Bold" />
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding Belge.BelgeTipi}" />
+
+                        <Label Grid.Row="1" Grid.Column="0" Text="Boyut:" FontAttributes="Bold" />
+                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding BelgeBoyutuMetni}" />
+
+                        <Label Grid.Row="2" Grid.Column="0" Text="Yüklenme:" FontAttributes="Bold" />
+                        <Label Grid.Row="2" Grid.Column="1" Text="{Binding YuklemeTarihiMetni}" />
+                    </Grid>
+
+                    <!-- Açıklama -->
+                    <StackLayout Spacing="5">
+                        <Label Text="Açıklama:" FontAttributes="Bold" />
+                        <Label Text="{Binding Belge.DosyaAciklamasi}" 
+                               FontSize="14" 
+                               TextColor="DarkGray"
+                               LineBreakMode="WordWrap" />
+                    </StackLayout>
+
+                    <!-- Görüntülenme İstatistiği -->
+                    <StackLayout Spacing="5">
+                        <Label Text="İstatistikler:" FontAttributes="Bold" />
+                        <Label FontSize="12" TextColor="Blue">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="Görüntülenme: " />
+                                    <Span Text="{Binding Belge.GoruntulenmeSayisi}" FontAttributes="Bold" />
+                                    <Span Text=" | Son Görüntüleme: " />
+                                    <Span Text="{Binding Belge.SonGoruntulenmeTarihi, StringFormat='{0:dd.MM.yyyy HH:mm}'}" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </StackLayout>
+
+                    <!-- Aksiyon Butonları -->
+                    <Grid ColumnSpacing="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Button Grid.Column="0"
+                                Text="İndir"
+                                BackgroundColor="Green"
+                                TextColor="White"
+                                CornerRadius="5"
+                                Command="{Binding BelgeIndir}" />
+
+                        <Button Grid.Column="1"
+                                Text="Paylaş"
+                                BackgroundColor="Blue"
+                                TextColor="White"
+                                CornerRadius="5"
+                                Command="{Binding BelgePaylas}" />
+                    </Grid>
+                </StackLayout>
+            </Frame>
+
+            <!-- Not Ekleme -->
+            <Frame BackgroundColor="LightBlue" Padding="15" CornerRadius="10" HasShadow="True">
+                <StackLayout Spacing="10">
+                    <Label Text="Yeni Not Ekle" FontSize="16" FontAttributes="Bold" TextColor="DarkBlue" />
+                    
+                    <Entry Placeholder="Not başlığı..."
+                           Text="{Binding YeniNotBaslik}" />
+                    
+                    <Editor Placeholder="Not içeriği..."
+                            Text="{Binding YeniNotIcerik}"
+                            HeightRequest="80" />
+                    
+                    <Button Text="Not Ekle"
+                            BackgroundColor="DarkBlue"
+                            TextColor="White"
+                            CornerRadius="5"
+                            Command="{Binding NotEkleCommand}" />
+                </StackLayout>
+            </Frame>
+
+            <!-- Notlar Listesi -->
+            <Frame BackgroundColor="White" Padding="15" CornerRadius="10" HasShadow="True">
+                <StackLayout Spacing="15">
+                    <Label Text="Notlar" FontSize="16" FontAttributes="Bold" />
+                    
+                    <CollectionView ItemsSource="{Binding Notlar}" BackgroundColor="Transparent">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Not">
+                                <Grid Padding="10" BackgroundColor="LightGray" Margin="0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackLayout Grid.Column="0" Spacing="5">
+                                        <Label Text="{Binding Baslik}" 
+                                               FontSize="14" 
+                                               FontAttributes="Bold"
+                                               TextColor="Black" />
+                                        <Label Text="{Binding Icerik}" 
+                                               FontSize="12" 
+                                               TextColor="DarkGray"
+                                               LineBreakMode="WordWrap" />
+                                        <Label Text="{Binding Tarih, StringFormat='{0:dd.MM.yyyy HH:mm}'}" 
+                                               FontSize="10" 
+                                               TextColor="Gray" />
+                                    </StackLayout>
+
+                                    <Button Grid.Column="1"
+                                            Text="🗑️"
+                                            FontSize="14"
+                                            BackgroundColor="Red"
+                                            TextColor="White"
+                                            CornerRadius="15"
+                                            WidthRequest="35"
+                                            HeightRequest="35"
+                                            VerticalOptions="Start"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:BelgeDetayVM}}, Path=NotSilCommand}"
+                                            CommandParameter="{Binding .}" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+
+                        <CollectionView.EmptyView>
+                            <StackLayout Padding="20" VerticalOptions="Center">
+                                <Label Text="Henüz not bulunmuyor" 
+                                       FontSize="14" 
+                                       TextColor="Gray"
+                                       HorizontalTextAlignment="Center" />
+                            </StackLayout>
+                        </CollectionView.EmptyView>
+                    </CollectionView>
+                </StackLayout>
+            </Frame>
+
+            <!-- Versiyon Geçmişi -->
+            <Frame BackgroundColor="White" Padding="15" CornerRadius="10" HasShadow="True">
+                <StackLayout Spacing="15">
+                    <Label Text="Versiyon Geçmişi" FontSize="16" FontAttributes="Bold" />
+                    
+                    <CollectionView ItemsSource="{Binding Versiyonlar}" BackgroundColor="Transparent">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:BelgeVersiyon">
+                                <Frame BackgroundColor="LightGray" Padding="10" Margin="0,5" CornerRadius="5">
+                                    <StackLayout Spacing="5">
+                                        <Grid ColumnSpacing="10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Label Grid.Column="0"
+                                                   Text="{Binding VersiyonNumarasi, StringFormat='v{0}'}" 
+                                                   FontSize="14" 
+                                                   FontAttributes="Bold"
+                                                   TextColor="Blue" />
+
+                                            <Label Grid.Column="1"
+                                                   Text="{Binding Tarih, StringFormat='{0:dd.MM.yyyy HH:mm}'}" 
+                                                   FontSize="12" 
+                                                   TextColor="Gray"
+                                                   HorizontalOptions="End" />
+                                        </Grid>
+
+                                        <Label Text="{Binding Aciklama}" 
+                                               FontSize="12" 
+                                               TextColor="DarkGray"
+                                               LineBreakMode="WordWrap" />
+                                    </StackLayout>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+
+                        <CollectionView.EmptyView>
+                            <StackLayout Padding="20" VerticalOptions="Center">
+                                <Label Text="Versiyon geçmişi bulunmuyor" 
+                                       FontSize="14" 
+                                       TextColor="Gray"
+                                       HorizontalTextAlignment="Center" />
+                            </StackLayout>
+                        </CollectionView.EmptyView>
+                    </CollectionView>
+                </StackLayout>
+            </Frame>
+
+            <!-- Loading Indicator -->
+            <ActivityIndicator IsVisible="{Binding IsBusy}"
+                              IsRunning="{Binding IsBusy}"
+                              Color="Blue"
+                              VerticalOptions="Center"
+                              HorizontalOptions="Center" />
+
+        </StackLayout>
+    </ScrollView>
+</ContentPage> 
